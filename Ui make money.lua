@@ -100,14 +100,14 @@ local IsOpened = true
 		if IsOpened then
 			IsOpened = false
 			old_position = Topbar.Position
-			Main:TweenSize(UDim2.new(0,0,0,0),'Out','Quad',0.2,true,nil)
-			smh:TweenSize(UDim2.new(0,0,0,0),'Out','Quad',0.2,true,nil)
-			smh_2:TweenSize(UDim2.new(0,0,0,0),'Out','Quad',0.2,true,nil)
-			Topbar:TweenSize(UDim2.new(0,50,0,50),'Out','Quad',0.2,true,nil)
-			Topbar:TweenPosition(UDim2.new(0.5,0,0.85,0),'Out','Quad',0.3,true,nil)
-			ImageButton:TweenPosition(UDim2.new(0,0,0,0),'Out','Quad',0.3,true,nil)
-			ImageButton:TweenSize(UDim2.new(1, 0, 1, 0),'Out','Quad',0.3,true,nil)
-			NameLabel.Visible = false
+                        Main:TweenSize(UDim2.new(0, 0, 0, 0), 'Out', 'Quad', 0.2, true, nil)
+                        smh:TweenSize(UDim2.new(0, 0, 0, 0), 'Out', 'Quad', 0.2, true, nil)
+                        smh_2:TweenSize(UDim2.new(0, 0, 0, 0), 'Out', 'Quad', 0.2, true, nil)
+                        Topbar:TweenSize(UDim2.new(0, 50, 0, 50), 'Out', 'Quad', 0.2, true, nil)
+                        Topbar:TweenPosition(UDim2.new(0.5, 0, -0.1, 0), 'Out', 'Quad', 0.3, true, nil) -- ปรับตำแหน่งใหม่
+                        ImageButton:TweenPosition(UDim2.new(0, 0, 0, 0), 'Out', 'Quad', 0.3, true, nil)
+                        ImageButton:TweenSize(UDim2.new(1, 0, 1, 0), 'Out', 'Quad', 0.3, true, nil)
+                        NameLabel.Visible = false
 		else
 			IsOpened = true
 			Main:TweenSize(UDim2.new(1, 0, -1.75555551, 444),'Out','Quad',0.2,true,nil)
