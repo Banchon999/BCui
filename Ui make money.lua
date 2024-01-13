@@ -81,7 +81,7 @@ function Library.Main(Text, PARENT, keycode)
 	NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 	NameLabel.TextSize = 19
 	NameLabel.TextXAlignment = Enum.TextXAlignment.Left
-	NameLabel.Text = Text .. ' | UI Lib -> https://github.com/slf0Dev' -- give credits to owner ui lib
+	NameLabel.Text = Text .. 'nahh' -- give credits to owner ui lib
 
 	ImageButton.Parent = Topbar
 	ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -614,69 +614,72 @@ function Library.Main(Text, PARENT, keycode)
 
 
 				local Sliding, Dragging = false, false
-				local RealValue = DefaultValue
-				local value
-				local function move(Pressed)
-					Sliding = true;
-					local pos = UDim2.new(math.clamp((Pressed.Position.X - SliderBase.AbsolutePosition.X) / SliderBase.AbsoluteSize.X, 0, 1), 0, 1, 0)
-					local size = UDim2.new(math.clamp((Pressed.Position.X - SliderBase.AbsolutePosition.X) / SliderBase.AbsoluteSize.X, 0, 1), 0, 1, 0)
-					SliderProgress:TweenSize(size, 'Out', 'Sine', 0.1, true,nil);
-					RealValue = (((pos.X.Scale * Max) / Max) * (Max - Min) + Min)
-					value = (Precise and string.format('%.1f', tostring(RealValue))) or (math.floor(RealValue))
-					TextLabel.Text = tostring(value)
-					Callback(value)
-				end
+local RealValue = DefaultValue
+local value
 
-				Slider.InputBegan:Connect(function(Pressed)
-					if Pressed.UserInputType == Enum.UserInputType.MouseButton1 then
-						Dragging = true
-						Sliding = false 
-						TweenService:Create(SliderBorder,TweenInfo.new(0.3),{Transparency = 0.85}):Play()
-						TweenService:Create(SliderProgress,TweenInfo.new(0.3),{BackgroundTransparency = 0}):Play()
-						TweenService:Create(SliderProgress,TweenInfo.new(0.3),{BackgroundColor3 = Color3.fromRGB(37, 150, 255)}):Play()
-						TweenService:Create(TextLabel,TweenInfo.new(0.3),{TextColor3 = Color3.fromRGB(255,255,255)}):Play()
-						move(Pressed)
-					end
-				end)
+local function move(Position)
+    Sliding = true
+    local pos = UDim2.new(math.clamp((Position.X - SliderBase.AbsolutePosition.X) / SliderBase.AbsoluteSize.X, 0, 1), 0, 1, 0)
+    local size = UDim2.new(math.clamp((Position.X - SliderBase.AbsolutePosition.X) / SliderBase.AbsoluteSize.X, 0, 1), 0, 1, 0)
+    SliderProgress:TweenSize(size, 'Out', 'Sine', 0.1, true, nil)
+    RealValue = (((pos.X.Scale * Max) / Max) * (Max - Min) + Min)
+    value = (Precise and string.format('%.1f', tostring(RealValue))) or (math.floor(RealValue))
+    TextLabel.Text = tostring(value)
+    Callback(value)
+end
 
-				Slider.InputEnded:Connect(function(Pressed)
-					if Pressed.UserInputType == Enum.UserInputType.MouseButton1 then
-						Dragging = false
-						Sliding = false
-						TweenService:Create(TextLabel,TweenInfo.new(0.3),{TextColor3 = Color3.fromRGB(200,200,200)}):Play()
-						TweenService:Create(SliderBorder,TweenInfo.new(0.3),{Transparency = 0.95}):Play()
-						TweenService:Create(SliderProgress,TweenInfo.new(0.3),{BackgroundTransparency = 0.85}):Play()
-						TweenService:Create(SliderProgress,TweenInfo.new(0.3),{BackgroundColor3 = Color3.fromRGB(255,255,255)}):Play()
-						move(Pressed)
-					end
-				end)
+local function handleInput(Input)
+    if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+        Dragging = true
+        Sliding = false
+        TweenService:Create(SliderBorder, TweenInfo.new(0.3), {Transparency = 0.85}):Play()
+        TweenService:Create(SliderProgress, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
+        TweenService:Create(SliderProgress, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(37, 150, 255)}):Play()
+        TweenService:Create(TextLabel, TweenInfo.new(0.3), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+        move(Input.Position)
+    elseif Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
+        if Dragging then
+            move(Input.Position)
+        end
+    end
+end
 
-				game:GetService('UserInputService').InputChanged:Connect(function(Pressed)
-					if Dragging and Pressed.UserInputType == Enum.UserInputType.MouseMovement then
-						move(Pressed)
-					end
-				end)
+Slider.InputBegan:Connect(handleInput)
+Slider.InputChanged:Connect(handleInput)
+Slider.InputEnded:Connect(function(Input)
+    if (Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch) and Dragging then
+        Dragging = false
+        Sliding = false
+        TweenService:Create(TextLabel, TweenInfo.new(0.3), {TextColor3 = Color3.fromRGB(200, 200, 200)}):Play()
+        TweenService:Create(SliderBorder, TweenInfo.new(0.3), {Transparency = 0.95}):Play()
+        TweenService:Create(SliderProgress, TweenInfo.new(0.3), {BackgroundTransparency = 0.85}):Play()
+        TweenService:Create(SliderProgress, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+        move(Input.Position)
+    end
+end)
 
-				Slider.MouseEnter:Connect(function()
-					if not Dragging then
-						TweenService:Create(TextLabel,TweenInfo.new(0.3),{TextColor3 = Color3.fromRGB(255,255,255)}):Play()
-						TweenService:Create(SliderBorder,TweenInfo.new(0.3),{Transparency = 0.9}):Play()
-						TweenService:Create(SliderProgress,TweenInfo.new(0.3),{BackgroundTransparency = 0}):Play()
-						TweenService:Create(SliderProgress,TweenInfo.new(0.3),{BackgroundColor3 = Color3.fromRGB(37, 150, 255)}):Play()
-						TweenService:Create(Slider,TweenInfo.new(0.3),{TextColor3 = Color3.fromRGB(255,255,255)}):Play()
-					end
-				end)
-				Slider.MouseLeave:Connect(function()
-					if not Dragging then
-						TweenService:Create(TextLabel,TweenInfo.new(0.3),{TextColor3 = Color3.fromRGB(200,200,200)}):Play()
-						TweenService:Create(SliderBorder,TweenInfo.new(0.3),{Transparency = 0.95}):Play()
-						TweenService:Create(Slider,TweenInfo.new(0.3),{TextColor3 = Color3.fromRGB(200,200,200)}):Play()
-						TweenService:Create(SliderProgress,TweenInfo.new(0.3),{BackgroundTransparency = 0.85}):Play()
-						TweenService:Create(SliderProgress,TweenInfo.new(0.3),{BackgroundColor3 = Color3.fromRGB(255,255,255)}):Play()
-					end
-				end)
-				return Slider;
-			end
+Slider.MouseEnter:Connect(function()
+    if not Dragging then
+        TweenService:Create(TextLabel, TweenInfo.new(0.3), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+        TweenService:Create(SliderBorder, TweenInfo.new(0.3), {Transparency = 0.9}):Play()
+        TweenService:Create(SliderProgress, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
+        TweenService:Create(SliderProgress, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(37, 150, 255)}):Play()
+        TweenService:Create(Slider, TweenInfo.new(0.3), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+    end
+end)
+
+Slider.MouseLeave:Connect(function()
+    if not Dragging then
+        TweenService:Create(TextLabel, TweenInfo.new(0.3), {TextColor3 = Color3.fromRGB(200, 200, 200)}):Play()
+        TweenService:Create(SliderBorder, TweenInfo.new(0.3), {Transparency = 0.95}):Play()
+        TweenService:Create(Slider, TweenInfo.new(0.3), {TextColor3 = Color3.fromRGB(200, 200, 200)}):Play()
+        TweenService:Create(SliderProgress, TweenInfo.new(0.3), {BackgroundTransparency = 0.85}):Play()
+        TweenService:Create(SliderProgress, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+    end
+end)
+
+return Slider;
+
 			function InsideFolder.TextBox(Placeholder, Callback)
 				local TextBox = Instance.new('TextBox')
 				local UICorner = Instance.new('UICorner')
