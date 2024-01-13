@@ -42,7 +42,7 @@ function Library.Main(Text, PARENT, keycode)
 	Topbar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 	Topbar.BorderSizePixel = 0
 	Topbar.Position = UDim2.new(0.189116865, 0, 0.068217054, 0)
-	Topbar.Size = UDim2.new(0, 200, 0, 37)
+	Topbar.Size = UDim2.new(0, 700, 0, 37)
 
 	Main.Name = 'Main'
 	Main.Parent = Topbar
@@ -94,32 +94,30 @@ function Library.Main(Text, PARENT, keycode)
 	ImageButton.Image = 'http://www.roblox.com/asset/?id=9444423916'
 	ImageButton.ScaleType = Enum.ScaleType.Fit
 
-local IsOpened = true
-	local old_position
-	local function Show_Hide_UI()
-		if IsOpened then
-			IsOpened = false
-			old_position = Topbar.Position
-			Main:TweenSize(UDim2.new(0,0,0,0),'Out','Quad',0.2,true,nil)
-			smh:TweenSize(UDim2.new(0,0,0,0),'Out','Quad',0.2,true,nil)
-			smh_2:TweenSize(UDim2.new(0,0,0,0),'Out','Quad',0.2,true,nil)
-			Topbar:TweenSize(UDim2.new(0,50,0,50),'Out','Quad',0.2,true,nil)
-			Topbar:TweenPosition(UDim2.new(0.5,0,0.85,0),'Out','Quad',0.3,true,nil)
-			ImageButton:TweenPosition(UDim2.new(0,0,0,0),'Out','Quad',0.3,true,nil)
-			ImageButton:TweenSize(UDim2.new(1, 0, 1, 0),'Out','Quad',0.3,true,nil)
-			NameLabel.Visible = false
-		else
-			IsOpened = true
-			Main:TweenSize(UDim2.new(1, 0, -1.75555551, 444),'Out','Quad',0.2,true,nil)
-			smh:TweenSize(UDim2.new(1, 0, 0, 9),'Out','Quad',0.2,true,nil)
-			smh_2:TweenSize(UDim2.new(1, 0, 0, 9),'Out','Quad',0.2,true,nil)
-			Topbar:TweenSize(UDim2.new(0, 700, 0, 37),'Out','Quad',0.2,true,nil)
-			Topbar:TweenPosition(UDim2.new(old_position.X.Scale, old_position.X.Offset, old_position.Y.Scale, old_position.Y.Offset),'Out','Quad',0.3,true,nil)
-			ImageButton:TweenPosition(UDim2.new(0.949999988, 0, 0, 0),'Out','Quad',0.3,true,nil)
-			ImageButton:TweenSize(UDim2.new(0, 29, 0, 29),'Out','Quad',0.3,true,nil)
-			NameLabel.Visible = true
-		end
-	end
+local function Show_Hide_UI()
+    if IsOpened then
+        IsOpened = false
+        old_position = Topbar.Position
+        Main:TweenSize(UDim2.new(0, 0, 0, 0), 'Out', 'Quad', 0.2, true, nil)
+        smh:TweenSize(UDim2.new(0, 0, 0, 0), 'Out', 'Quad', 0.2, true, nil)
+        smh_2:TweenSize(UDim2.new(0, 0, 0, 0), 'Out', 'Quad', 0.2, true, nil)
+        Topbar:TweenSize(UDim2.new(0, 50, 0, 50), 'Out', 'Quad', 0.2, true, nil)
+        Topbar:TweenPosition(UDim2.new(0.5, 0, 0.85, 0), 'Out', 'Quad', 0.3, true, nil)
+        ImageButton:TweenPosition(UDim2.new(0, 0, 0, 0), 'Out', 'Quad', 0.3, true, nil)
+        ImageButton:TweenSize(UDim2.new(1, 0, 1, 0), 'Out', 'Quad', 0.3, true, nil)
+        NameLabel.Visible = false
+    else
+        IsOpened = true
+        Main:TweenSize(UDim2.new(1, 0, -1.75555551, 444), 'Out', 'Quad', 0.2, true, nil)
+        smh:TweenSize(UDim2.new(1, 0, 0, 9), 'Out', 'Quad', 0.2, true, nil)
+        smh_2:TweenSize(UDim2.new(1, 0, 0, 9), 'Out', 'Quad', 0.2, true, nil)
+        Topbar:TweenSize(UDim2.new(0, 700, 0, 37), 'Out', 'Quad', 0.2, true, nil)
+        Topbar:TweenPosition(UDim2.new(0.5, 0, 0.5, 0), 'Out', 'Quad', 0.3, true, nil) -- ตำแหน่งใหม่ที่เปลี่ยนแปลง
+        ImageButton:TweenPosition(UDim2.new(0.949999988, 0, 0, 0), 'Out', 'Quad', 0.3, true, nil)
+        ImageButton:TweenSize(UDim2.new(0, 29, 0, 29), 'Out', 'Quad', 0.3, true, nil)
+        NameLabel.Visible = true
+    end
+end
 
 	ImageButton.MouseButton1Click:Connect(function()
 		Show_Hide_UI()
