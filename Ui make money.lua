@@ -101,23 +101,21 @@ local function Show_Hide_UI()
     if IsOpened then
         IsOpened = false
         old_position = Topbar.Position
-        Main:TweenSize(UDim2.new(0, 0, 0, 0), 'Out', 'Quad', 0.2, true, nil)
-        smh:TweenSize(UDim2.new(0, 0, 0, 0), 'Out', 'Quad', 0.2, true, nil)
-        smh_2:TweenSize(UDim2.new(0, 0, 0, 0), 'Out', 'Quad', 0.2, true, nil)
-        Topbar:TweenSize(UDim2.new(0, 50, 0, 50), 'Out', 'Quad', 0.2, true, nil)
-        Topbar:TweenPosition(UDim2.new(1, -50, 0.85, 0), 'Out', 'Quad', 0.3, true, nil) -- ปรับตำแหน่งขวา
-        ImageButton.Image = "https://fonts.google.com/icons?selected=Material%20Icons%3Ahighlight_off%3A" -- เปลี่ยน ID ของรูปลูกศร
-        ImageButton:TweenPosition(UDim2.new(1, -50, 0, 0), 'Out', 'Quad', 0.3, true, nil) -- ปรับตำแหน่งขวา
+        Main:TweenSize(UDim2.new(0,0,0,0),'Out','Quad',0.2,true,nil)
+        smh:TweenSize(UDim2.new(0,0,0,0),'Out','Quad',0.2,true,nil)
+        smh_2:TweenSize(UDim2.new(0,0,0,0),'Out','Quad',0.2,true,nil)
+        Topbar:TweenSize(UDim2.new(0,50,0,50),'Out','Quad',0.2,true,nil)
+        ImageButton.Image = "rbxassetid://123456789" -- เปลี่ยน ID ของรูปลูกศร
+        ImageButton:TweenPosition(UDim2.new(0,0,0,0),'Out','Quad',0.3,true,nil)
         NameLabel.Visible = false
     else
         IsOpened = true
-        Main:TweenSize(UDim2.new(1, 0, -1.75555551, 444), 'Out', 'Quad', 0.2, true, nil)
-        smh:TweenSize(UDim2.new(1, 0, 0, 9), 'Out', 'Quad', 0.2, true, nil)
-        smh_2:TweenSize(UDim2.new(1, 0, 0, 9), 'Out', 'Quad', 0.2, true, nil)
-        Topbar:TweenSize(UDim2.new(0, 700, 0, 37), 'Out', 'Quad', 0.2, true, nil)
-        Topbar:TweenPosition(UDim2.new(old_position.X.Scale, old_position.X.Offset, old_position.Y.Scale, old_position.Y.Offset), 'Out', 'Quad', 0.3, true, nil)
-        ImageButton.Image = "https://fonts.google.com/icons?selected=Material%20Icons%3Acheck_circle_outline%3A" -- เปลี่ยน ID ของรูปเป็นลูกศร
-        ImageButton:TweenPosition(UDim2.new(0.05, 0, 0, 0), 'Out', 'Quad', 0.3, true, nil) -- ปรับตำแหน่งซ้าย
+        Main:TweenSize(UDim2.new(1, 0, -1.75555551, 444),'Out','Quad',0.2,true,nil)
+        smh:TweenSize(UDim2.new(1, 0, 0, 9),'Out','Quad',0.2,true,nil)
+        smh_2:TweenSize(UDim2.new(1, 0, 0, 9),'Out','Quad',0.2,true,nil)
+        Topbar:TweenSize(UDim2.new(0, 700, 0, 37),'Out','Quad',0.2,true,nil)
+        ImageButton.Image = "rbxassetid://987654321" -- เปลี่ยน ID ของรูปเป็นลูกศร
+        ImageButton:TweenPosition(UDim2.new(0.5, 0, 0.5, 0),'Out','Quad',0.3,true,nil)
         NameLabel.Visible = true
     end
 end
@@ -126,12 +124,9 @@ ImageButton.MouseButton1Click:Connect(function()
     Show_Hide_UI()
 end)
 
-game:GetService('UserInputService').InputBegan:Connect(function(key, isTyping)
-    if not isTyping and key.KeyCode == Enum.KeyCode[keycode] then
-        Show_Hide_UI()
-    end
+game:GetService('UserInputService').InputBegan:Connect(function()
+    Show_Hide_UI()
 end)
-
 
 	local dragging
 	local dragInput
