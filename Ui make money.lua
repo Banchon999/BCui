@@ -627,17 +627,23 @@ function Library.Main(Text, PARENT, keycode)
 					Callback(value)
 				end
 
-				Slider.InputBegan:Connect(function(Pressed)
-					if Pressed.UserInputType == Enum.UserInputType.MouseButton1 then
-						Dragging = true
-						Sliding = false 
-						TweenService:Create(SliderBorder,TweenInfo.new(0.3),{Transparency = 0.85}):Play()
-						TweenService:Create(SliderProgress,TweenInfo.new(0.3),{BackgroundTransparency = 0}):Play()
-						TweenService:Create(SliderProgress,TweenInfo.new(0.3),{BackgroundColor3 = Color3.fromRGB(37, 150, 255)}):Play()
-						TweenService:Create(TextLabel,TweenInfo.new(0.3),{TextColor3 = Color3.fromRGB(255,255,255)}):Play()
-						move(Pressed)
-					end
-				end)
+-- ... (previous code)
+
+Slider.InputBegan:Connect(function(Input, Processed)
+    if not Processed then
+        if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+            Dragging = true
+            Sliding = false 
+            TweenService:Create(SliderBorder, TweenInfo.new(0.3), {Transparency = 0.85}):Play()
+            TweenService:Create(SliderProgress, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
+            TweenService:Create(SliderProgress, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(37, 150, 255)}):Play()
+            TweenService:Create(TextLabel, TweenInfo.new(0.3), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+            move(Input)
+        end
+    end
+end)
+
+-- ... (continue with the rest of your code)
 
 				Slider.InputEnded:Connect(function(Pressed)
 					if Pressed.UserInputType == Enum.UserInputType.MouseButton1 then
