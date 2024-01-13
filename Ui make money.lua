@@ -42,7 +42,7 @@ function Library.Main(Text, PARENT, keycode)
 	Topbar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 	Topbar.BorderSizePixel = 0
 	Topbar.Position = UDim2.new(0.189116865, 0, 0.068217054, 0)
-	Topbar.Size = UDim2.new(0, 700, 0, 37)
+	Topbar.Size = UDim2.new(0, 200, 0, 37)
 
 	Main.Name = 'Main'
 	Main.Parent = Topbar
@@ -76,7 +76,7 @@ function Library.Main(Text, PARENT, keycode)
 	NameLabel.BorderSizePixel = 0
 	--NameLabel.Position = UDim2.new(0.042857144, 0, 0, 0)
 	NameLabel.Position = UDim2.new(0.015, 0, 0, 2)
-	NameLabel.Size = UDim2.new(0, 195, 0, 29)
+	NameLabel.Size = UDim2.new(0, 55, 0, 29)
 	NameLabel.Font = Enum.Font.SourceSansBold
 	NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 	NameLabel.TextSize = 19
