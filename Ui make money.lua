@@ -94,6 +94,9 @@ function Library.Main(Text, PARENT, keycode)
 	ImageButton.Image = 'http://www.roblox.com/asset/?id=9444423916'
 	ImageButton.ScaleType = Enum.ScaleType.Fit
 
+local IsOpened = true
+local old_position
+
 local function Show_Hide_UI()
     if IsOpened then
         IsOpened = false
@@ -112,22 +115,23 @@ local function Show_Hide_UI()
         smh:TweenSize(UDim2.new(1, 0, 0, 9), 'Out', 'Quad', 0.2, true, nil)
         smh_2:TweenSize(UDim2.new(1, 0, 0, 9), 'Out', 'Quad', 0.2, true, nil)
         Topbar:TweenSize(UDim2.new(0, 700, 0, 37), 'Out', 'Quad', 0.2, true, nil)
-        Topbar:TweenPosition(UDim2.new(0.5, 0, 0.5, 0), 'Out', 'Quad', 0.3, true, nil) -- ตำแหน่งใหม่ที่เปลี่ยนแปลง
+        Topbar:TweenPosition(UDim2.new(old_position.X.Scale, old_position.X.Offset, old_position.Y.Scale, old_position.Y.Offset), 'Out', 'Quad', 0.3, true, nil)
         ImageButton:TweenPosition(UDim2.new(0.949999988, 0, 0, 0), 'Out', 'Quad', 0.3, true, nil)
         ImageButton:TweenSize(UDim2.new(0, 29, 0, 29), 'Out', 'Quad', 0.3, true, nil)
         NameLabel.Visible = true
     end
 end
 
-	ImageButton.MouseButton1Click:Connect(function()
-		Show_Hide_UI()
-	end)
+ImageButton.MouseButton1Click:Connect(function()
+    Show_Hide_UI()
+end)
 
-	game:GetService('UserInputService').InputBegan:Connect(function(key,isTyping)
-		if not isTyping and key.KeyCode == Enum.KeyCode[keycode] then
-			Show_Hide_UI()
-		end
-	end)
+game:GetService('UserInputService').InputBegan:Connect(function(key, isTyping)
+    if not isTyping and key.KeyCode == Enum.KeyCode[keycode] then
+        Show_Hide_UI()
+    end
+end)
+
 
 	local dragging
 	local dragInput
