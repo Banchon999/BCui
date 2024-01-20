@@ -1,0 +1,53 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Banchon999/Uihack/main/Ui%20make%20money.lua"))()
+
+local MainWindow = Library.Main('Kuy Hub', game.CoreGui, 'LeftAlt')
+local Category = MainWindow.Category('Categories')
+
+--> Folders
+local Folder_1 = Category.Folder('ทั่วไป')
+local Folder_2 = Category.Folder('รีเบิร์ด')
+
+--> Folder 1
+Folder_1.Label('เลือกเลยน้อง')
+
+--Folder_1.Button('กันหลุด', function()
+   -- print('ควย')--
+--end)
+
+local Setting = {
+    WalkSpeed = 16,
+    JumpPowerGetService = 50,
+    Fps = 60
+}
+
+Folder_1.Toggle('ล๊อคค่า', Setting, function(Kuy)
+    Setting = Kuy
+    game:GetService("RunService").Stepped:Connect(function()
+        if Setting then
+            game.Players.LocalPlayer.Character:WaitForChild("Humanoid").WalkSpeed = Setting.WalkSpeed
+            game.Players.LocalPlayer.Character:WaitForChild("Humanoid").JumpPower = Setting.JumpPowerGetService
+            setfpscap(Setting.Fps)
+        end
+    end)
+end, false)
+
+local Textbox = Folder_1.TextBox('ความเร็ว', function(value)
+    Setting.WalkSpeed = tonumber(value)
+end)
+
+local Textbox1 = Folder_1.TextBox('กระโดด', function(value)
+    Setting.JumpPowerGetService = tonumber(value)
+end)
+
+local Textbox2 = Folder_1.TextBox('FPS ล๊อค', function(value)
+    Setting.Fps = tonumber(value)
+end)
+
+local Dropdown = Folder_1.Dropdown('วาร์ป!!')
+
+Dropdown.Choice('ตัวเล1', function()
+    print('Sus.')
+end)
+Dropdown.Choice('Example Choice 2', function()
+    print('Amoug us.')
+end)
