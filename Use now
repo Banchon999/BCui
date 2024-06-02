@@ -1,4 +1,4 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Banchon999/Uihack/main/Ui%20make%20money.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Banchon999/BCui/main/Ui%20make%20money.lua"))()
 
 local MainWindow = Library.Main('Kuy Hub', game.CoreGui, 'LeftAlt')
 local Category = MainWindow.Category('Categories')
