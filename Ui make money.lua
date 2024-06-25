@@ -1,4 +1,4 @@
---> Made by https://github.com/slf0Dev
+--> Demax
 local TweenService = game:GetService('TweenService')
 local InputService = game:GetService('UserInputService')
 local ms = game.Players.LocalPlayer:GetMouse()
@@ -37,7 +37,7 @@ function Library.Main(Text, PARENT, keycode)
 	LibraryUI.ResetOnSpawn = false
 	LibraryUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-	Topbar.Name = 'OceriumUI'
+	Topbar.Name = 'DEMAX'
 	Topbar.Parent = LibraryUI
 	Topbar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 	Topbar.BorderSizePixel = 0
