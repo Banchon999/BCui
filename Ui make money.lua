@@ -48,29 +48,35 @@ end
 
 local Orion = Instance.new("ScreenGui")
 Orion.Name = "Orion"
-
--- ลบโค้ดเดิมออก แล้วแทนที่ด้วย:
-local function SetupGUI()
-    local success, result = pcall(function()
-        if syn then
-            syn.protect_gui(Orion)
-            Orion.Parent = game.CoreGui
-        elseif gethui then
-            Orion.Parent = gethui()
-        elseif game:GetService("CoreGui"):FindFirstChild("RobloxGui") then
-            -- สำหรับ Mobile
-            Orion.Parent = game:GetService("CoreGui").RobloxGui
-        else
-            Orion.Parent = game.CoreGui
-        end
-    end)
-    
-    if not success then
-        Orion.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    end
+if syn then
+	syn.protect_gui(Orion)
+	Orion.Parent = game.CoreGui
+else
+	Orion.Parent = gethui() or game.CoreGui
 end
 
-SetupGUI()
+if gethui then
+	for _, Interface in ipairs(gethui():GetChildren()) do
+		if Interface.Name == Orion.Name and Interface ~= Orion then
+			Interface:Destroy()
+		end
+	end
+else
+	for _, Interface in ipairs(game.CoreGui:GetChildren()) do
+		if Interface.Name == Orion.Name and Interface ~= Orion then
+			Interface:Destroy()
+		end
+	end
+end
+
+function OrionLib:IsRunning()
+	if gethui then
+		return Orion.Parent == gethui()
+	else
+		return Orion.Parent == game:GetService("CoreGui")
+	end
+
+end
 
 local function AddConnection(Signal, Function)
 	if (not OrionLib:IsRunning()) then
@@ -91,62 +97,36 @@ task.spawn(function()
 	end
 end)
 
-local function CreateTouchSupport(element)
-    element.TouchTap:Connect(function()
-        local clickEvent = Instance.new("BindableEvent")
-        clickEvent.Event:Connect(function()
-            if element.MouseButton1Click then
-                element.MouseButton1Click:Fire()
-            end
-        end)
-        clickEvent:Fire()
-    end)
-    
-    element.TouchLongPress:Connect(function()
-        local clickEvent = Instance.new("BindableEvent")
-        clickEvent.Event:Connect(function()
-            if element.MouseButton2Click then
-                element.MouseButton2Click:Fire()
-            end
-        end)
-        clickEvent:Fire()
-    end)
-end
-		
 local function MakeDraggable(DragPoint, Main)
-    local Dragging, DragInput, MousePos, FramePos = false
-    
-    local function UpdateDrag(input)
-        local Delta = input.Position - MousePos
-        Main.Position = UDim2.new(FramePos.X.Scale, FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)
-    end
-    
-    DragPoint.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            Dragging = true
-            MousePos = input.Position
-            FramePos = Main.Position
-            
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    Dragging = false
-                end
-            end)
-        end
-    end)
-    
-    DragPoint.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            DragInput = input
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if input == DragInput and Dragging then
-            UpdateDrag(input)
-        end
-    end)
-end
+	pcall(function()
+		local Dragging, DragInput, MousePos, FramePos = false
+		AddConnection(DragPoint.InputBegan, function(Input)
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+				Dragging = true
+				MousePos = Input.Position
+				FramePos = Main.Position
+
+				Input.Changed:Connect(function()
+					if Input.UserInputState == Enum.UserInputState.End then
+						Dragging = false
+					end
+				end)
+			end
+		end)
+		AddConnection(DragPoint.InputChanged, function(Input)
+			if Input.UserInputType == Enum.UserInputType.MouseMovement then
+				DragInput = Input
+			end
+		end)
+		AddConnection(UserInputService.InputChanged, function(Input)
+			if Input == DragInput and Dragging then
+				local Delta = Input.Position - MousePos
+				--TweenService:Create(Main, TweenInfo.new(0.05, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
+				Main.Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)
+			end
+		end)
+	end)
+end    
 
 local function Create(Name, Properties, Children)
 	local Object = Instance.new(Name)
@@ -484,13 +464,6 @@ function OrionLib:Init()
 	end	
 end	
 
--- เพิ่มก่อน return TabFunction
-for _, element in pairs(Orion:GetDescendants()) do
-    if element:IsA("GuiButton") then
-        CreateTouchSupport(element)
-    end
-end
-		
 function OrionLib:MakeWindow(WindowConfig)
 	local FirstTab = true
 	local Minimized = false
