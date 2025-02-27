@@ -1,3 +1,334 @@
+# คู่มือการใช้งาน Orion Library สำหรับทือถือและพีซี
+
+## สารบัญ
+1. [การติดตั้ง](#การติดตั้ง)
+2. [การสร้างหน้าต่างหลัก](#การสร้างหน้าต่างหลัก)
+3. [การสร้าง Tab](#การสร้าง-tab)
+4. [UI Elements พื้นฐาน](#ui-elements-พื้นฐาน)
+   - [Button (ปุ่ม)](#button-ปุ่ม)
+   - [Toggle (เปิด/ปิด)](#toggle-เปิดปิด)
+   - [Slider (แถบเลื่อน)](#slider-แถบเลื่อน)
+   - [Dropdown (เมนูแบบเลื่อนลง)](#dropdown-เมนูแบบเลื่อนลง)
+   - [Colorpicker (ตัวเลือกสี)](#colorpicker-ตัวเลือกสี)
+   - [Textbox (กล่องข้อความ)](#textbox-กล่องข้อความ)
+   - [Label (ข้อความ)](#label-ข้อความ)
+   - [Paragraph (ข้อความยาว)](#paragraph-ข้อความยาว)
+   - [Keybind (การกำหนดคีย์)](#keybind-การกำหนดคีย์)
+5. [การสร้าง Section](#การสร้าง-section)
+6. [การแจ้งเตือน](#การแจ้งเตือน)
+7. [การบันทึกค่า](#การบันทึกค่า)
+8. [ฟีเจอร์พิเศษสำหรับมือถือ](#ฟีเจอร์พิเศษสำหรับมือถือ)
+9. [คำแนะนำการใช้งานและการแก้ไขปัญหา](#คำแนะนำการใช้งานและการแก้ไขปัญหา)
+10. [ตัวอย่างสคริปท์เต็มรูปแบบ](#ตัวอย่างสคริปท์เต็มรูปแบบ)
+
+## การติดตั้ง
+
+ในการใช้งาน Orion Library ที่รองรับมือถือ เริ่มต้นด้วยการโหลดไลบรารีโดยใช้โค้ดต่อไปนี้:
+
+```lua
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/Banchon999/BCui/refs/heads/main/Ui%20make%20money.lua')))()
+```
+
+## การสร้างหน้าต่างหลัก
+
+หลังจากโหลดไลบรารีแล้ว คุณต้องสร้างหน้าต่างหลักโดยใช้ฟังก์ชัน `MakeWindow`:
+
+```lua
+local Window = OrionLib:MakeWindow({
+    Name = "ชื่อหน้าต่าง",              -- ชื่อที่แสดงที่หน้าต่าง
+    HidePremium = false,              -- ซ่อนป้าย Premium (true/false)
+    SaveConfig = true,                -- เปิดใช้งานการบันทึกค่า (true/false)
+    ConfigFolder = "ชื่อโฟลเดอร์",      -- ชื่อโฟลเดอร์สำหรับบันทึกค่า
+    IntroEnabled = true,              -- เปิดใช้งานหน้า Intro (true/false)
+    IntroText = "ข้อความ Intro",       -- ข้อความที่แสดงในหน้า Intro
+    IntroIcon = "rbxassetid://ID",    -- ไอคอนในหน้า Intro (ใส่ ID ของรูป)
+    Icon = "rbxassetid://ID",         -- ไอคอนของหน้าต่าง (ใส่ ID ของรูป)
+    ShowIcon = true                   -- แสดงไอคอนหน้าต่าง (true/false)
+})
+```
+
+**หมายเหตุ**: คุณไม่จำเป็นต้องใส่ทุกตัวเลือก ค่าที่ไม่ได้ระบุจะใช้ค่าเริ่มต้น
+
+## การสร้าง Tab
+
+Tab ช่วยให้คุณจัดระเบียบองค์ประกอบ UI ของคุณเป็นหมวดหมู่:
+
+```lua
+local MyTab = Window:MakeTab({
+    Name = "ชื่อแท็บ",                  -- ชื่อที่แสดงบนแท็บ
+    Icon = "rbxassetid://ID",          -- ไอคอนของแท็บ (ใส่ ID ของรูป)
+    PremiumOnly = false                -- ต้องเป็น Premium เท่านั้นหรือไม่ (true/false)
+})
+```
+
+## UI Elements พื้นฐาน
+
+### Button (ปุ่ม)
+
+ปุ่มสามารถใช้เพื่อทริกเกอร์การทำงานเมื่อกด:
+
+```lua
+MyTab:AddButton({
+    Name = "ชื่อปุ่ม",                   -- ชื่อที่แสดงบนปุ่ม
+    Callback = function()               -- ฟังก์ชันที่จะทำงานเมื่อกดปุ่ม
+        print("ปุ่มถูกกด!")
+    end    
+})
+```
+
+### Toggle (เปิด/ปิด)
+
+ใช้สำหรับเปิด/ปิดฟีเจอร์ต่างๆ:
+
+```lua
+local myToggle = MyTab:AddToggle({
+    Name = "ชื่อ Toggle",                -- ชื่อที่แสดง
+    Default = false,                     -- ค่าเริ่มต้น (true/false)
+    Save = true,                         -- บันทึกค่าไว้หรือไม่ (true/false)
+    Flag = "myToggleFlag",               -- ชื่อสำหรับอ้างอิงค่า (ใช้สำหรับ Save)
+    Callback = function(Value)           -- ฟังก์ชันที่ทำงานเมื่อค่าเปลี่ยน
+        print("Toggle มีค่า:", Value)     -- Value เป็น true หรือ false
+    end    
+})
+```
+
+คุณสามารถตั้งค่า Toggle ในภายหลังได้:
+
+```lua
+myToggle:Set(true) -- เปลี่ยนค่าเป็น true (เปิด)
+myToggle:Set(false) -- เปลี่ยนค่าเป็น false (ปิด)
+```
+
+### Slider (แถบเลื่อน)
+
+ใช้สำหรับเลือกค่าตัวเลขในช่วงที่กำหนด:
+
+```lua
+local mySlider = MyTab:AddSlider({
+    Name = "ชื่อ Slider",                 -- ชื่อที่แสดง
+    Min = 0,                              -- ค่าต่ำสุด
+    Max = 100,                            -- ค่าสูงสุด
+    Default = 50,                         -- ค่าเริ่มต้น
+    Color = Color3.fromRGB(255, 0, 0),    -- สีของ Slider
+    Increment = 1,                        -- เพิ่มขึ้นครั้งละเท่าไร
+    ValueName = "เปอร์เซ็นต์",             -- ชื่อของหน่วย (จะแสดงต่อท้ายค่า)
+    Save = true,                          -- บันทึกค่าไว้หรือไม่
+    Flag = "mySliderFlag",                -- ชื่อสำหรับอ้างอิงค่า
+    Callback = function(Value)            -- ฟังก์ชันที่ทำงานเมื่อค่าเปลี่ยน
+        print("Slider มีค่า:", Value)     
+    end    
+})
+```
+
+คุณสามารถตั้งค่า Slider ในภายหลังได้:
+
+```lua
+mySlider:Set(75) -- ตั้งค่า Slider เป็น 75
+```
+
+### Dropdown (เมนูแบบเลื่อนลง)
+
+ใช้สำหรับเลือกตัวเลือกจากรายการ:
+
+```lua
+local options = {"ตัวเลือก 1", "ตัวเลือก 2", "ตัวเลือก 3"}
+
+local myDropdown = MyTab:AddDropdown({
+    Name = "ชื่อ Dropdown",               -- ชื่อที่แสดง
+    Default = "ตัวเลือก 1",               -- ค่าเริ่มต้น (ต้องตรงกับหนึ่งในตัวเลือก)
+    Options = options,                    -- รายการตัวเลือก (array)
+    Save = true,                          -- บันทึกค่าไว้หรือไม่
+    Flag = "myDropdownFlag",              -- ชื่อสำหรับอ้างอิงค่า
+    Callback = function(Value)            -- ฟังก์ชันที่ทำงานเมื่อเลือกตัวเลือกใหม่
+        print("เลือก:", Value)
+    end    
+})
+```
+
+คุณสามารถอัพเดทตัวเลือกและค่าของ Dropdown ในภายหลัง:
+
+```lua
+-- อัพเดทตัวเลือก
+myDropdown:Refresh({"ตัวเลือกใหม่ 1", "ตัวเลือกใหม่ 2"}, true) -- พารามิเตอร์ที่สอง true = รีเซ็ตค่าที่เลือกไว้
+
+-- ตั้งค่าที่เลือก
+myDropdown:Set("ตัวเลือกใหม่ 1")
+```
+
+### Colorpicker (ตัวเลือกสี)
+
+ใช้สำหรับเลือกสี:
+
+```lua
+local myColorpicker = MyTab:AddColorpicker({
+    Name = "ชื่อ Colorpicker",               -- ชื่อที่แสดง
+    Default = Color3.fromRGB(255, 0, 0),     -- สีเริ่มต้น
+    Save = true,                             -- บันทึกค่าไว้หรือไม่
+    Flag = "myColorFlag",                    -- ชื่อสำหรับอ้างอิงค่า
+    Callback = function(Value)               -- ฟังก์ชันที่ทำงานเมื่อเลือกสีใหม่
+        print("เลือกสี:", Value)             -- Value เป็น Color3
+    end  
+})
+```
+
+คุณสามารถตั้งค่าสีในภายหลังได้:
+
+```lua
+myColorpicker:Set(Color3.fromRGB(0, 255, 0)) -- เปลี่ยนเป็นสีเขียว
+```
+
+### Textbox (กล่องข้อความ)
+
+ใช้สำหรับรับข้อมูลข้อความจากผู้ใช้:
+
+```lua
+MyTab:AddTextbox({
+    Name = "ชื่อ Textbox",                   -- ชื่อที่แสดง
+    Default = "ข้อความเริ่มต้น",              -- ข้อความเริ่มต้น
+    TextDisappear = true,                    -- ล้างข้อความหลังจากกด Enter หรือไม่
+    Save = true,                             -- บันทึกค่าไว้หรือไม่
+    Flag = "myTextboxFlag",                  -- ชื่อสำหรับอ้างอิงค่า
+    Callback = function(Value)               -- ฟังก์ชันที่ทำงานเมื่อข้อความเปลี่ยน
+        print("ข้อความ:", Value)
+    end      
+})
+```
+
+### Label (ข้อความ)
+
+ใช้สำหรับแสดงข้อความสั้นๆ:
+
+```lua
+local myLabel = MyTab:AddLabel("ข้อความ")
+```
+
+คุณสามารถอัพเดทข้อความในภายหลังได้:
+
+```lua
+myLabel:Set("ข้อความใหม่")
+```
+
+### Paragraph (ข้อความยาว)
+
+ใช้สำหรับแสดงข้อความที่ยาวกว่า Label:
+
+```lua
+local myParagraph = MyTab:AddParagraph("หัวข้อ", "เนื้อหาข้อความที่ยาวกว่าและสามารถมีหลายบรรทัดได้ สามารถอธิบายรายละเอียดได้มากกว่า")
+```
+
+คุณสามารถอัพเดทเนื้อหาในภายหลังได้:
+
+```lua
+myParagraph:Set("เนื้อหาใหม่ที่ยาวกว่าเดิม")
+```
+
+### Keybind (การกำหนดคีย์)
+
+ใช้สำหรับกำหนดคีย์ลัด:
+
+```lua
+MyTab:AddBind({
+    Name = "ชื่อ Keybind",                   -- ชื่อที่แสดง
+    Default = Enum.KeyCode.F,                -- ปุ่มเริ่มต้น
+    Hold = false,                            -- ต้องกดค้างหรือไม่ (true = กดค้าง, false = กดครั้งเดียว)
+    Save = true,                             -- บันทึกค่าไว้หรือไม่
+    Flag = "myKeybindFlag",                  -- ชื่อสำหรับอ้างอิงค่า
+    Callback = function()                    -- ฟังก์ชันที่ทำงานเมื่อกดปุ่ม
+        print("กดปุ่มลัด!")
+    end    
+})
+```
+
+**หมายเหตุสำหรับมือถือ**: Keybind ไม่ค่อยมีประโยชน์บนมือถือเพราะไม่มีคีย์บอร์ด แต่สามารถใช้กับผู้เล่นที่ใช้ PC ได้
+
+## การสร้าง Section
+
+Section ช่วยแบ่งกลุ่ม UI Elements ในแท็บเดียวกัน:
+
+```lua
+local MySection = MyTab:AddSection({
+    Name = "ชื่อ Section"                -- ชื่อ Section
+})
+```
+
+หลังจากสร้าง Section แล้ว คุณสามารถเพิ่ม Elements เข้าไปได้เหมือนกับที่เพิ่มใน Tab:
+
+```lua
+MySection:AddButton({
+    Name = "ปุ่มใน Section",
+    Callback = function()
+        print("ปุ่มใน Section ถูกกด!")
+    end    
+})
+```
+
+## การแจ้งเตือน
+
+คุณสามารถสร้างการแจ้งเตือนเพื่อแสดงข้อความสำคัญให้ผู้ใช้:
+
+```lua
+OrionLib:MakeNotification({
+    Name = "หัวข้อแจ้งเตือน",              -- หัวข้อ
+    Content = "เนื้อหาแจ้งเตือน",           -- เนื้อหา
+    Image = "rbxassetid://4483345998",   -- รูปภาพ (ใส่ ID)
+    Time = 5                             -- เวลาแสดง (วินาที)
+})
+```
+
+## การบันทึกค่า
+
+หากคุณต้องการให้ค่าต่างๆ ถูกบันทึกไว้เมื่อผู้ใช้ปิดเกมและกลับมาเล่นอีกครั้ง:
+
+1. ตั้งค่า `SaveConfig = true` ใน `MakeWindow`
+2. กำหนด `ConfigFolder` เพื่อบอกที่เก็บไฟล์
+3. เพิ่ม `Save = true` และ `Flag = "ชื่อ"` ในแต่ละ Element ที่ต้องการบันทึกค่า
+
+ตัวอย่างเช่น:
+
+```lua
+local toggle = MyTab:AddToggle({
+    Name = "บันทึกค่า Toggle",
+    Default = false,
+    Save = true,                        -- ต้องการบันทึกค่า
+    Flag = "myToggleSave",              -- ชื่อสำหรับอ้างอิง (ต้องไม่ซ้ำกัน)
+    Callback = function(Value) end      
+})
+```
+
+## ฟีเจอร์พิเศษสำหรับมือถือ
+
+Orion Library ที่ปรับให้ทำงานบนมือถือมีฟีเจอร์พิเศษดังนี้:
+
+1. **การตรวจจับอัตโนมัติ**: ไลบรารีจะตรวจจับว่ากำลังทำงานบนมือถือหรือไม่ และปรับขนาด UI ให้เหมาะสม
+
+2. **ปุ่มลอย**: เมื่อซ่อน UI จะมีปุ่มลอยที่มุมซ้ายบนให้กดเพื่อแสดง UI อีกครั้ง
+
+3. **ขนาดปุ่มใหญ่ขึ้น**: ปุ่มและองค์ประกอบ UI มีขนาดใหญ่ขึ้นเพื่อให้ง่ายต่อการสัมผัส
+
+4. **การเลื่อนที่ลื่นไหล**: ปรับการเลื่อนให้รู้สึกเป็นธรรมชาติบนหน้าจอสัมผัส
+
+5. **พื้นที่ปลอดภัย**: UI จะหลีกเลี่ยงพื้นที่รอยบากและส่วนของ UI ระบบของมือถือ
+
+## คำแนะนำการใช้งานและการแก้ไขปัญหา
+
+1. **ไม่สามารถโหลดไลบรารีได้**: ตรวจสอบว่าใช้ URL ที่ถูกต้องและมีการเชื่อมต่ออินเทอร์เน็ต
+
+2. **UI มีขนาดเล็กเกินไปบนมือถือ**: ตรวจสอบว่าใช้เวอร์ชัน Orion ที่รองรับมือถือ
+
+3. **การเลื่อนไม่ทำงาน**: ตรวจสอบว่าไม่มีอะไรขัดขวางการสัมผัสหรือบล็อกองค์ประกอบ UI
+
+4. **การบันทึกค่าไม่ทำงาน**: ตรวจสอบว่าตั้งค่า `SaveConfig = true` และกำหนด `Flag` สำหรับทุก Element ที่ต้องการบันทึก
+
+5. **UI หายไป**: กดปุ่ม RightShift บน PC หรือปุ่มลอยที่มุมซ้ายบนบนมือถือเพื่อแสดง UI อีกครั้ง
+
+6. **Toggle ไม่ทำงาน**: ตรวจสอบว่า Callback ของ Toggle ไม่มีข้อผิดพลาด
+
+## ตัวอย่างสคริปท์เต็มรูปแบบ
+
+นี่คือตัวอย่างสคริปท์เต็มรูปแบบที่ใช้ฟีเจอร์ต่างๆ ของ Orion Library:
+
+```lua
+-- โหลด Orion Library ที่รองรับมือถือ
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/Banchon999/BCui/refs/heads/main/Ui%20make%20money.lua')))()
 
 -- สร้างหน้าต่างหลัก
@@ -12,130 +343,42 @@ local Window = OrionLib:MakeWindow({
     Icon = "rbxassetid://4483345998"
 })
 
--- สร้าง Tab ต่างๆ
-local CombatTab = Window:MakeTab({
-    Name = "ต่อสู้",
-    Icon = "rbxassetid://7743878358", -- ไอคอนดาบ
+-- สร้าง Tab
+local MainTab = Window:MakeTab({
+    Name = "หน้าหลัก",
+    Icon = "rbxassetid://7733715400",
     PremiumOnly = false
 })
 
-local FarmTab = Window:MakeTab({
-    Name = "ฟาร์ม",
-    Icon = "rbxassetid://4483345998", -- ไอคอนเหรียญ
-    PremiumOnly = false
+-- สร้าง Section
+local FeaturesSection = MainTab:AddSection({
+    Name = "ฟีเจอร์หลัก"
 })
 
-local PlayerTab = Window:MakeTab({
-    Name = "ผู้เล่น",
-    Icon = "rbxassetid://7733715400", -- ไอคอนคน
-    PremiumOnly = false
-})
-
-local VisualsTab = Window:MakeTab({
-    Name = "ภาพ",
-    Icon = "rbxassetid://7734053495", -- ไอคอนตา
-    PremiumOnly = false
-})
-
-local MiscTab = Window:MakeTab({
-    Name = "อื่นๆ",
-    Icon = "rbxassetid://7733799682", -- ไอคอนเฟือง
-    PremiumOnly = false
-})
-
---// ส่วนของ Combat Tab
-local AimSection = CombatTab:AddSection({
-    Name = "ระบบช่วยเล็ง"
-})
-
--- ตัวอย่างของ Toggle พร้อมกับ ColorPicker
-AimSection:AddToggle({
-    Name = "เปิดใช้งาน Aimbot",
-    Default = false,
-    Save = true,
-    Flag = "aimbotEnabled",
-    Callback = function(Value)
-        -- โค้ดสำหรับเปิด/ปิด Aimbot
-    end
-})
-
--- ตัวอย่าง Dropdown
-local aimPartOptions = {"ศีรษะ", "ลำตัว", "แขน", "ขา"}
-AimSection:AddDropdown({
-    Name = "เลือกส่วนที่ต้องการเล็ง",
-    Default = "ศีรษะ",
-    Options = aimPartOptions,
-    Save = true,
-    Flag = "aimPart",
-    Callback = function(Value)
-        -- โค้ดสำหรับตั้งค่าส่วนที่ต้องการเล็ง
-    end
-})
-
--- ตัวอย่าง ColorPicker
-AimSection:AddColorpicker({
-    Name = "สี FOV",
-    Default = Color3.fromRGB(255, 0, 0),
-    Callback = function(Value)
-        -- โค้ดสำหรับเปลี่ยนสี FOV
-    end
-})
-
-local ESPSection = CombatTab:AddSection({
-    Name = "ระบบ ESP"
-})
-
--- ตัวอย่าง Toggle
-ESPSection:AddToggle({
-    Name = "เปิดใช้งาน ESP",
-    Default = false,
-    Save = true,
-    Flag = "espEnabled",
-    Callback = function(Value)
-        -- โค้ดสำหรับเปิด/ปิด ESP
-    end
-})
-
--- ตัวอย่าง Toggle สำหรับตัวเลือกย่อย
-ESPSection:AddToggle({
-    Name = "แสดงระยะห่าง",
-    Default = false,
-    Save = true,
-    Flag = "espShowDistance",
-    Callback = function(Value)
-        -- โค้ดสำหรับแสดง/ซ่อนระยะห่าง
-    end
-})
-
---// ส่วนของ Farm Tab
-local AutoFarmSection = FarmTab:AddSection({
-    Name = "ตั้งค่าฟาร์มอัตโนมัติ"
-})
-
--- ตัวอย่างของ Toggle ที่ลิงก์กับ Slider
+-- เพิ่ม Toggle
 local autoFarmEnabled = false
 local autoFarmSpeed = 1
 
-AutoFarmSection:AddToggle({
-    Name = "เปิดใช้งานฟาร์มอัตโนมัติ",
+FeaturesSection:AddToggle({
+    Name = "เปิดใช้งานฟีเจอร์อัตโนมัติ",
     Default = false,
     Save = true,
-    Flag = "autoFarmEnabled",
+    Flag = "autoFeatureEnabled",
     Callback = function(Value)
         autoFarmEnabled = Value
         
-        -- แสดงการแจ้งเตือน
         OrionLib:MakeNotification({
-            Name = "ระบบฟาร์ม",
-            Content = Value and "เริ่มฟาร์มอัตโนมัติที่ความเร็ว " .. autoFarmSpeed .. "x" or "หยุดฟาร์มอัตโนมัติ",
+            Name = "แจ้งเตือน",
+            Content = Value and "เปิดใช้งานฟีเจอร์อัตโนมัติแล้ว" or "ปิดใช้งานฟีเจอร์อัตโนมัติแล้ว",
             Image = "rbxassetid://4483345998",
             Time = 5
         })
     end
 })
 
-AutoFarmSection:AddSlider({
-    Name = "ความเร็วในการฟาร์ม",
+-- เพิ่ม Slider
+FeaturesSection:AddSlider({
+    Name = "ความเร็ว",
     Min = 1,
     Max = 10,
     Default = 1,
@@ -143,15 +386,14 @@ AutoFarmSection:AddSlider({
     Increment = 1,
     ValueName = "x",
     Save = true,
-    Flag = "autoFarmSpeed",
+    Flag = "autoFeatureSpeed",
     Callback = function(Value)
         autoFarmSpeed = Value
         
-        -- อัพเดทแจ้งเตือนถ้ากำลังฟาร์มอยู่
         if autoFarmEnabled then
             OrionLib:MakeNotification({
-                Name = "ระบบฟาร์ม",
-                Content = "ปรับความเร็วการฟาร์มเป็น " .. Value .. "x",
+                Name = "แจ้งเตือน",
+                Content = "ปรับความเร็วเป็น " .. Value .. "x แล้ว",
                 Image = "rbxassetid://4483345998",
                 Time = 3
             })
@@ -159,218 +401,43 @@ AutoFarmSection:AddSlider({
     end
 })
 
-local CollectionSection = FarmTab:AddSection({
-    Name = "การเก็บไอเทม"
-})
-
-CollectionSection:AddToggle({
-    Name = "เก็บเหรียญอัตโนมัติ",
-    Default = false,
-    Save = true,
-    Flag = "autoCollectCoins",
-    Callback = function(Value)
-        -- โค้ดสำหรับเก็บเหรียญ
-    end
-})
-
-CollectionSection:AddToggle({
-    Name = "เก็บเพชรอัตโนมัติ",
-    Default = false,
-    Save = true,
-    Flag = "autoCollectGems",
-    Callback = function(Value)
-        -- โค้ดสำหรับเก็บเพชร
-    end
-})
-
---// ส่วนของ Player Tab
-local MovementSection = PlayerTab:AddSection({
-    Name = "การเคลื่อนที่"
-})
-
--- ตัวอย่าง Toggle กับ Slider ที่เชื่อมโยงกัน
-local speedEnabled = false
-local speedValue = 16
-
-MovementSection:AddToggle({
-    Name = "วิ่งเร็ว",
-    Default = false,
-    Callback = function(Value)
-        speedEnabled = Value
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and speedValue or 16
-    end
-})
-
-local SpeedSlider = MovementSection:AddSlider({
-    Name = "ค่าความเร็ว",
-    Min = 16,
-    Max = 500,
-    Default = 16,
-    Color = Color3.fromRGB(255, 0, 0),
-    Increment = 1,
-    ValueName = "ความเร็ว",
-    Callback = function(Value)
-        speedValue = Value
-        if speedEnabled then
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
-        end
-    end
-})
-
--- ตัวอย่าง Toggle กับ Slider ที่เชื่อมโยงกัน (สำหรับกระโดด)
-local jumpEnabled = false
-local jumpValue = 50
-
-MovementSection:AddToggle({
-    Name = "กระโดดสูง",
-    Default = false,
-    Callback = function(Value)
-        jumpEnabled = Value
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value and jumpValue or 50
-    end
-})
-
-MovementSection:AddSlider({
-    Name = "ค่าความสูงกระโดด",
-    Min = 50,
-    Max = 500,
-    Default = 50,
-    Color = Color3.fromRGB(0, 0, 255),
-    Increment = 1,
-    ValueName = "ความแรง",
-    Callback = function(Value)
-        jumpValue = Value
-        if jumpEnabled then
-            game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
-        end
-    end
-})
-
-local TeleportSection = PlayerTab:AddSection({
-    Name = "เทเลพอร์ต"
-})
-
--- ตัวอย่าง Dropdown และ Button ที่ทำงานร่วมกัน
-local locations = {
-    ["จุดเกิด"] = Vector3.new(0, 10, 0),
-    ["ร้านค้า"] = Vector3.new(100, 10, 100),
-    ["ดันเจี้ยน"] = Vector3.new(-100, 10, -100),
-    ["บอส"] = Vector3.new(0, 10, 200)
-}
-
-local selectedLocation = "จุดเกิด"
-
-TeleportSection:AddDropdown({
-    Name = "เลือกตำแหน่ง",
-    Default = "จุดเกิด",
-    Options = {"จุดเกิด", "ร้านค้า", "ดันเจี้ยน", "บอส"},
-    Callback = function(Value)
-        selectedLocation = Value
-    end
-})
-
-TeleportSection:AddButton({
-    Name = "เทเลพอร์ต",
+-- เพิ่ม Button
+FeaturesSection:AddButton({
+    Name = "เริ่มต้นใหม่",
     Callback = function()
-        local character = game.Players.LocalPlayer.Character
-        if character and locations[selectedLocation] then
-            character:SetPrimaryPartCFrame(CFrame.new(locations[selectedLocation]))
-            
-            OrionLib:MakeNotification({
-                Name = "ระบบเทเลพอร์ต",
-                Content = "เทเลพอร์ตไปยัง " .. selectedLocation .. " สำเร็จ!",
-                Image = "rbxassetid://4483345998",
-                Time = 3
-            })
-        end
-    end
-})
-
---// ส่วนของ Visuals Tab
-local WorldSection = VisualsTab:AddSection({
-    Name = "โลก"
-})
-
--- ตัวอย่าง Slider กับ ColorPicker
-WorldSection:AddSlider({
-    Name = "ความสว่าง",
-    Min = 0,
-    Max = 100,
-    Default = 50,
-    Color = Color3.fromRGB(255, 255, 0),
-    Increment = 1,
-    ValueName = "%",
-    Callback = function(Value)
-        -- โค้ดสำหรับปรับความสว่าง
-    end
-})
-
-WorldSection:AddColorpicker({
-    Name = "สีท้องฟ้า",
-    Default = Color3.fromRGB(0, 150, 255),
-    Callback = function(Value)
-        -- โค้ดสำหรับเปลี่ยนสีท้องฟ้า
-    end
-})
-
-local CharacterSection = VisualsTab:AddSection({
-    Name = "ตัวละคร"
-})
-
--- ตัวอย่าง Textbox
-CharacterSection:AddTextbox({
-    Name = "เปลี่ยนชื่อเหนือหัว",
-    Default = "",
-    TextDisappear = true,
-    Callback = function(Value)
-        -- โค้ดสำหรับเปลี่ยนชื่อเหนือหัว
         OrionLib:MakeNotification({
-            Name = "ระบบตัวละคร",
-            Content = "เปลี่ยนชื่อเหนือหัวเป็น: " .. Value,
-            Image = "rbxassetid://4483345998",
-            Time = 3
-        })
-    end
-})
-
---// ส่วนของ Misc Tab
-local SettingsSection = MiscTab:AddSection({
-    Name = "ตั้งค่า"
-})
-
--- ตัวอย่าง Keybind (ปรับให้เหมาะกับมือถือ)
-SettingsSection:AddBind({
-    Name = "ปุ่มซ่อน UI (PC)",
-    Default = Enum.KeyCode.RightShift,
-    Hold = false,
-    Callback = function()
-        -- โค้ดซ่อน UI (จัดการโดยไลบรารีอยู่แล้ว)
-    end
-})
-
-SettingsSection:AddParagraph("หมายเหตุสำหรับมือถือ", 
-    "บนอุปกรณ์มือถือ คุณสามารถกดปุ่มซ่อน/แสดง UI ที่มุมซ้ายบนของหน้าจอ " ..
-    "ทุกปุ่มจะมีขนาดใหญ่ขึ้นเพื่อให้ง่ายต่อการใช้งานด้วยการสัมผัส ระบบลากเพื่อปรับค่าของ Slider " ..
-    "ได้รับการปรับให้ทำงานได้ดีกับอินพุตแบบสัมผัส")
-
--- ตัวอย่าง Label
-SettingsSection:AddLabel("เวอร์ชั่น: 1.0.0")
-
--- ตัวอย่าง Button สำหรับรีเซ็ตค่าทั้งหมด
-SettingsSection:AddButton({
-    Name = "รีเซ็ตค่าทั้งหมด",
-    Callback = function()
-        -- รีเซ็ตค่าต่างๆ
-        SpeedSlider:Set(16)
-        
-        OrionLib:MakeNotification({
-            Name = "ระบบตั้งค่า",
-            Content = "รีเซ็ตค่าทั้งหมดเรียบร้อย!",
+            Name = "แจ้งเตือน",
+            Content = "เริ่มต้นใหม่แล้ว!",
             Image = "rbxassetid://4483345998",
             Time = 5
         })
     end
 })
 
+-- เพิ่ม Label และ Paragraph
+FeaturesSection:AddLabel("คำแนะนำการใช้งาน")
+FeaturesSection:AddParagraph("หมายเหตุสำหรับมือถือ", 
+    "UI นี้ได้รับการปรับให้เหมาะกับการใช้งานบนมือถือ ปุ่มมีขนาดใหญ่ขึ้นและใช้งานได้ง่ายด้วยการสัมผัส")
+
+-- เพิ่ม Dropdown
+local locations = {"จุดเกิด", "ร้านค้า", "ดันเจี้ยน", "บอส"}
+local selectedLocation = "จุดเกิด"
+
+FeaturesSection:AddDropdown({
+    Name = "เลือกตำแหน่ง",
+    Default = "จุดเกิด",
+    Options = locations,
+    Save = true,
+    Flag = "selectedLocation",
+    Callback = function(Value)
+        selectedLocation = Value
+    end
+})
+
 -- เริ่มต้นไลบรารี (จำเป็นต้องทำเสมอที่ท้ายสคริปท์)
 OrionLib:Init()
+```
+
+---
+
+**หมายเหตุสำคัญ**: อย่าลืมเรียกใช้ `OrionLib:Init()` ที่ท้ายสคริปท์เสมอเพื่อเริ่มการทำงานของไลบรารี
