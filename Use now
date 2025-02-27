@@ -1,299 +1,376 @@
-# Orion Library
-This documentation is for the stable release of Orion Library.
-
-## Booting the Library
-```lua
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/Banchon999/BCui/refs/heads/main/Ui%20make%20money.lua')))()
-```
 
-
-
-## Creating a Window
-```lua
-local Window = OrionLib:MakeWindow({Name = "Title of the library", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
-
---[[
-Name = <string> - The name of the UI.
-HidePremium = <bool> - Whether or not the user details shows Premium status or not.
-SaveConfig = <bool> - Toggles the config saving in the UI.
-ConfigFolder = <string> - The name of the folder where the configs are saved.
-IntroEnabled = <bool> - Whether or not to show the intro animation.
-IntroText = <string> - Text to show in the intro animation.
-IntroIcon = <string> - URL to the image you want to use in the intro animation.
-Icon = <string> - URL to the image you want displayed on the window.
-CloseCallback = <function> - Function to execute when the window is closed.
-]]
-```
-
-
-
-## Creating a Tab
-```lua
-local Tab = Window:MakeTab({
-	Name = "Tab 1",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
+-- สร้างหน้าต่างหลัก
+local Window = OrionLib:MakeWindow({
+    Name = "ฟีเจอร์ขั้นสูง Orion Mobile", 
+    HidePremium = false,
+    SaveConfig = true, 
+    ConfigFolder = "OrionAdvanced",
+    IntroEnabled = true,
+    IntroText = "ฟีเจอร์ขั้นสูง Orion",
+    ShowIcon = true,
+    Icon = "rbxassetid://4483345998"
 })
 
---[[
-Name = <string> - The name of the tab.
-Icon = <string> - The icon of the tab.
-PremiumOnly = <bool> - Makes the tab accessible to Sirus Premium users only.
-]]
-```
-## Creating a Section
-```lua
-local Section = Tab:AddSection({
-	Name = "Section"
+-- สร้าง Tab ต่างๆ
+local CombatTab = Window:MakeTab({
+    Name = "ต่อสู้",
+    Icon = "rbxassetid://7743878358", -- ไอคอนดาบ
+    PremiumOnly = false
 })
 
---[[
-Name = <string> - The name of the section.
-]]
-```
-You can add elements to sections the same way you would add them to a tab normally.
-
-## Notifying the user
-```lua
-OrionLib:MakeNotification({
-	Name = "Title!",
-	Content = "Notification content... what will it say??",
-	Image = "rbxassetid://4483345998",
-	Time = 5
+local FarmTab = Window:MakeTab({
+    Name = "ฟาร์ม",
+    Icon = "rbxassetid://4483345998", -- ไอคอนเหรียญ
+    PremiumOnly = false
 })
 
---[[
-Title = <string> - The title of the notification.
-Content = <string> - The content of the notification.
-Image = <string> - The icon of the notification.
-Time = <number> - The duration of the notfication.
-]]
-```
-
-
-
-## Creating a Button
-```lua
-Tab:AddButton({
-	Name = "Button!",
-	Callback = function()
-      		print("button pressed")
-  	end    
+local PlayerTab = Window:MakeTab({
+    Name = "ผู้เล่น",
+    Icon = "rbxassetid://7733715400", -- ไอคอนคน
+    PremiumOnly = false
 })
 
---[[
-Name = <string> - The name of the button.
-Callback = <function> - The function of the button.
-]]
-```
-
-
-## Creating a Checkbox toggle
-```lua
-Tab:AddToggle({
-	Name = "This is a toggle!",
-	Default = false,
-	Callback = function(Value)
-		print(Value)
-	end    
+local VisualsTab = Window:MakeTab({
+    Name = "ภาพ",
+    Icon = "rbxassetid://7734053495", -- ไอคอนตา
+    PremiumOnly = false
 })
 
---[[
-Name = <string> - The name of the toggle.
-Default = <bool> - The default value of the toggle.
-Callback = <function> - The function of the toggle.
-]]
-```
-
-### Changing the value of an existing Toggle
-```lua
-CoolToggle:Set(true)
-```
-
-
-
-## Creating a Color Picker
-```lua
-Tab:AddColorpicker({
-	Name = "Colorpicker",
-	Default = Color3.fromRGB(255, 0, 0),
-	Callback = function(Value)
-		print(Value)
-	end	  
+local MiscTab = Window:MakeTab({
+    Name = "อื่นๆ",
+    Icon = "rbxassetid://7733799682", -- ไอคอนเฟือง
+    PremiumOnly = false
 })
 
---[[
-Name = <string> - The name of the colorpicker.
-Default = <color3> - The default value of the colorpicker.
-Callback = <function> - The function of the colorpicker.
-]]
-```
-
-### Setting the color picker's value
-```lua
-ColorPicker:Set(Color3.fromRGB(255,255,255))
-```
-
-
-## Creating a Slider
-```lua
-Tab:AddSlider({
-	Name = "Slider",
-	Min = 0,
-	Max = 20,
-	Default = 5,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
-	ValueName = "bananas",
-	Callback = function(Value)
-		print(Value)
-	end    
+--// ส่วนของ Combat Tab
+local AimSection = CombatTab:AddSection({
+    Name = "ระบบช่วยเล็ง"
 })
 
---[[
-Name = <string> - The name of the slider.
-Min = <number> - The minimal value of the slider.
-Max = <number> - The maxium value of the slider.
-Increment = <number> - How much the slider will change value when dragging.
-Default = <number> - The default value of the slider.
-ValueName = <string> - The text after the value number.
-Callback = <function> - The function of the slider.
-]]
-```
-
-### Change Slider Value
-```lua
-Slider:Set(2)
-```
-Make sure you make your slider a variable (local CoolSlider = Tab:AddSlider...) for this to work.
-
-
-## Creating a Label
-```lua
-Tab:AddLabel("Label")
-```
-
-### Changing the value of an existing label
-```lua
-CoolLabel:Set("Label New!")
-```
-
-
-## Creating a Paragraph
-```lua
-Tab:AddParagraph("Paragraph","Paragraph Content")
-```
-
-### Changing an existing paragraph
-```lua
-CoolParagraph:Set("Paragraph New!", "New Paragraph Content!")
-```
-
-
-## Creating an Adaptive Input
-```lua
-Tab:AddTextbox({
-	Name = "Textbox",
-	Default = "default box input",
-	TextDisappear = true,
-	Callback = function(Value)
-		print(Value)
-	end	  
-})
-
---[[
-Name = <string> - The name of the textbox.
-Default = <string> - The default value of the textbox.
-TextDisappear = <bool> - Makes the text disappear in the textbox after losing focus.
-Callback = <function> - The function of the textbox.
-]]
-```
-
-
-## Creating a Keybind
-```lua
-Tab:AddBind({
-	Name = "Bind",
-	Default = Enum.KeyCode.E,
-	Hold = false,
-	Callback = function()
-		print("press")
-	end    
-})
-
---[[
-Name = <string> - The name of the bind.
-Default = <keycode> - The default value of the bind.
-Hold = <bool> - Makes the bind work like: Holding the key > The bind returns true, Not holding the key > Bind returns false.
-Callback = <function> - The function of the bind.
-]]
-```
-
-### Chaning the value of a bind
-```lua
-Bind:Set(Enum.KeyCode.E)
-```
-
-
-## Creating a Dropdown menu
-```lua
-Tab:AddDropdown({
-	Name = "Dropdown",
-	Default = "1",
-	Options = {"1", "2"},
-	Callback = function(Value)
-		print(Value)
-	end    
-})
-
---[[
-Name = <string> - The name of the dropdown.
-Default = <string> - The default value of the dropdown.
-Options = <table> - The options in the dropdown.
-Callback = <function> - The function of the dropdown.
-]]
-```
-
-### Adding a set of new Dropdown buttons to an existing menu
-```lua
-Dropdown:Refresh(List<table>,true)
-```
-
-The above boolean value "true" is whether or not the current buttons will be deleted.
-### Selecting a dropdown option
-```lua
-Dropdown:Set("dropdown option")
-```
-
-# Finishing your script (REQUIRED)
-The below function needs to be added at the end of your code.
-```lua
-OrionLib:Init()
-```
-
-### How flags work.
-The flags feature in the ui may be confusing for some people. It serves the purpose of being the ID of an element in the config file, and makes accessing the value of an element anywhere in the code possible.
-Below in an example of using flags.
-```lua
-Tab1:AddToggle({
-    Name = "Toggle",
-    Default = true,
+-- ตัวอย่างของ Toggle พร้อมกับ ColorPicker
+AimSection:AddToggle({
+    Name = "เปิดใช้งาน Aimbot",
+    Default = false,
     Save = true,
-    Flag = "toggle"
+    Flag = "aimbotEnabled",
+    Callback = function(Value)
+        -- โค้ดสำหรับเปิด/ปิด Aimbot
+    end
 })
 
-print(OrionLib.Flags["toggle"].Value) -- prints the value of the toggle.
-```
-Flags only work with the toggle, slider, dropdown, bind, and colorpicker.
+-- ตัวอย่าง Dropdown
+local aimPartOptions = {"ศีรษะ", "ลำตัว", "แขน", "ขา"}
+AimSection:AddDropdown({
+    Name = "เลือกส่วนที่ต้องการเล็ง",
+    Default = "ศีรษะ",
+    Options = aimPartOptions,
+    Save = true,
+    Flag = "aimPart",
+    Callback = function(Value)
+        -- โค้ดสำหรับตั้งค่าส่วนที่ต้องการเล็ง
+    end
+})
 
-### Making your interface work with configs.
-In order to make your interface use the configs function you first need to add the `SaveConfig` and `ConfigFolder` arguments to your window function. The explanation of these arguments in above.
-Then you need to add the `Flag` and `Save` values to every toggle, slider, dropdown, bind, and colorpicker you want to include in the config file.
-The `Flag = <string>` argument is the ID of an element in the config file.
-The `Save = <bool>` argument includes the element in the config file.
-Config files are made for every game the library is launched in.
+-- ตัวอย่าง ColorPicker
+AimSection:AddColorpicker({
+    Name = "สี FOV",
+    Default = Color3.fromRGB(255, 0, 0),
+    Callback = function(Value)
+        -- โค้ดสำหรับเปลี่ยนสี FOV
+    end
+})
 
-## Destroying the Interface
-```lua
-OrionLib:Destroy()
-```
+local ESPSection = CombatTab:AddSection({
+    Name = "ระบบ ESP"
+})
+
+-- ตัวอย่าง Toggle
+ESPSection:AddToggle({
+    Name = "เปิดใช้งาน ESP",
+    Default = false,
+    Save = true,
+    Flag = "espEnabled",
+    Callback = function(Value)
+        -- โค้ดสำหรับเปิด/ปิด ESP
+    end
+})
+
+-- ตัวอย่าง Toggle สำหรับตัวเลือกย่อย
+ESPSection:AddToggle({
+    Name = "แสดงระยะห่าง",
+    Default = false,
+    Save = true,
+    Flag = "espShowDistance",
+    Callback = function(Value)
+        -- โค้ดสำหรับแสดง/ซ่อนระยะห่าง
+    end
+})
+
+--// ส่วนของ Farm Tab
+local AutoFarmSection = FarmTab:AddSection({
+    Name = "ตั้งค่าฟาร์มอัตโนมัติ"
+})
+
+-- ตัวอย่างของ Toggle ที่ลิงก์กับ Slider
+local autoFarmEnabled = false
+local autoFarmSpeed = 1
+
+AutoFarmSection:AddToggle({
+    Name = "เปิดใช้งานฟาร์มอัตโนมัติ",
+    Default = false,
+    Save = true,
+    Flag = "autoFarmEnabled",
+    Callback = function(Value)
+        autoFarmEnabled = Value
+        
+        -- แสดงการแจ้งเตือน
+        OrionLib:MakeNotification({
+            Name = "ระบบฟาร์ม",
+            Content = Value and "เริ่มฟาร์มอัตโนมัติที่ความเร็ว " .. autoFarmSpeed .. "x" or "หยุดฟาร์มอัตโนมัติ",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+    end
+})
+
+AutoFarmSection:AddSlider({
+    Name = "ความเร็วในการฟาร์ม",
+    Min = 1,
+    Max = 10,
+    Default = 1,
+    Color = Color3.fromRGB(0, 255, 0),
+    Increment = 1,
+    ValueName = "x",
+    Save = true,
+    Flag = "autoFarmSpeed",
+    Callback = function(Value)
+        autoFarmSpeed = Value
+        
+        -- อัพเดทแจ้งเตือนถ้ากำลังฟาร์มอยู่
+        if autoFarmEnabled then
+            OrionLib:MakeNotification({
+                Name = "ระบบฟาร์ม",
+                Content = "ปรับความเร็วการฟาร์มเป็น " .. Value .. "x",
+                Image = "rbxassetid://4483345998",
+                Time = 3
+            })
+        end
+    end
+})
+
+local CollectionSection = FarmTab:AddSection({
+    Name = "การเก็บไอเทม"
+})
+
+CollectionSection:AddToggle({
+    Name = "เก็บเหรียญอัตโนมัติ",
+    Default = false,
+    Save = true,
+    Flag = "autoCollectCoins",
+    Callback = function(Value)
+        -- โค้ดสำหรับเก็บเหรียญ
+    end
+})
+
+CollectionSection:AddToggle({
+    Name = "เก็บเพชรอัตโนมัติ",
+    Default = false,
+    Save = true,
+    Flag = "autoCollectGems",
+    Callback = function(Value)
+        -- โค้ดสำหรับเก็บเพชร
+    end
+})
+
+--// ส่วนของ Player Tab
+local MovementSection = PlayerTab:AddSection({
+    Name = "การเคลื่อนที่"
+})
+
+-- ตัวอย่าง Toggle กับ Slider ที่เชื่อมโยงกัน
+local speedEnabled = false
+local speedValue = 16
+
+MovementSection:AddToggle({
+    Name = "วิ่งเร็ว",
+    Default = false,
+    Callback = function(Value)
+        speedEnabled = Value
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and speedValue or 16
+    end
+})
+
+local SpeedSlider = MovementSection:AddSlider({
+    Name = "ค่าความเร็ว",
+    Min = 16,
+    Max = 500,
+    Default = 16,
+    Color = Color3.fromRGB(255, 0, 0),
+    Increment = 1,
+    ValueName = "ความเร็ว",
+    Callback = function(Value)
+        speedValue = Value
+        if speedEnabled then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+        end
+    end
+})
+
+-- ตัวอย่าง Toggle กับ Slider ที่เชื่อมโยงกัน (สำหรับกระโดด)
+local jumpEnabled = false
+local jumpValue = 50
+
+MovementSection:AddToggle({
+    Name = "กระโดดสูง",
+    Default = false,
+    Callback = function(Value)
+        jumpEnabled = Value
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value and jumpValue or 50
+    end
+})
+
+MovementSection:AddSlider({
+    Name = "ค่าความสูงกระโดด",
+    Min = 50,
+    Max = 500,
+    Default = 50,
+    Color = Color3.fromRGB(0, 0, 255),
+    Increment = 1,
+    ValueName = "ความแรง",
+    Callback = function(Value)
+        jumpValue = Value
+        if jumpEnabled then
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+        end
+    end
+})
+
+local TeleportSection = PlayerTab:AddSection({
+    Name = "เทเลพอร์ต"
+})
+
+-- ตัวอย่าง Dropdown และ Button ที่ทำงานร่วมกัน
+local locations = {
+    ["จุดเกิด"] = Vector3.new(0, 10, 0),
+    ["ร้านค้า"] = Vector3.new(100, 10, 100),
+    ["ดันเจี้ยน"] = Vector3.new(-100, 10, -100),
+    ["บอส"] = Vector3.new(0, 10, 200)
+}
+
+local selectedLocation = "จุดเกิด"
+
+TeleportSection:AddDropdown({
+    Name = "เลือกตำแหน่ง",
+    Default = "จุดเกิด",
+    Options = {"จุดเกิด", "ร้านค้า", "ดันเจี้ยน", "บอส"},
+    Callback = function(Value)
+        selectedLocation = Value
+    end
+})
+
+TeleportSection:AddButton({
+    Name = "เทเลพอร์ต",
+    Callback = function()
+        local character = game.Players.LocalPlayer.Character
+        if character and locations[selectedLocation] then
+            character:SetPrimaryPartCFrame(CFrame.new(locations[selectedLocation]))
+            
+            OrionLib:MakeNotification({
+                Name = "ระบบเทเลพอร์ต",
+                Content = "เทเลพอร์ตไปยัง " .. selectedLocation .. " สำเร็จ!",
+                Image = "rbxassetid://4483345998",
+                Time = 3
+            })
+        end
+    end
+})
+
+--// ส่วนของ Visuals Tab
+local WorldSection = VisualsTab:AddSection({
+    Name = "โลก"
+})
+
+-- ตัวอย่าง Slider กับ ColorPicker
+WorldSection:AddSlider({
+    Name = "ความสว่าง",
+    Min = 0,
+    Max = 100,
+    Default = 50,
+    Color = Color3.fromRGB(255, 255, 0),
+    Increment = 1,
+    ValueName = "%",
+    Callback = function(Value)
+        -- โค้ดสำหรับปรับความสว่าง
+    end
+})
+
+WorldSection:AddColorpicker({
+    Name = "สีท้องฟ้า",
+    Default = Color3.fromRGB(0, 150, 255),
+    Callback = function(Value)
+        -- โค้ดสำหรับเปลี่ยนสีท้องฟ้า
+    end
+})
+
+local CharacterSection = VisualsTab:AddSection({
+    Name = "ตัวละคร"
+})
+
+-- ตัวอย่าง Textbox
+CharacterSection:AddTextbox({
+    Name = "เปลี่ยนชื่อเหนือหัว",
+    Default = "",
+    TextDisappear = true,
+    Callback = function(Value)
+        -- โค้ดสำหรับเปลี่ยนชื่อเหนือหัว
+        OrionLib:MakeNotification({
+            Name = "ระบบตัวละคร",
+            Content = "เปลี่ยนชื่อเหนือหัวเป็น: " .. Value,
+            Image = "rbxassetid://4483345998",
+            Time = 3
+        })
+    end
+})
+
+--// ส่วนของ Misc Tab
+local SettingsSection = MiscTab:AddSection({
+    Name = "ตั้งค่า"
+})
+
+-- ตัวอย่าง Keybind (ปรับให้เหมาะกับมือถือ)
+SettingsSection:AddBind({
+    Name = "ปุ่มซ่อน UI (PC)",
+    Default = Enum.KeyCode.RightShift,
+    Hold = false,
+    Callback = function()
+        -- โค้ดซ่อน UI (จัดการโดยไลบรารีอยู่แล้ว)
+    end
+})
+
+SettingsSection:AddParagraph("หมายเหตุสำหรับมือถือ", 
+    "บนอุปกรณ์มือถือ คุณสามารถกดปุ่มซ่อน/แสดง UI ที่มุมซ้ายบนของหน้าจอ " ..
+    "ทุกปุ่มจะมีขนาดใหญ่ขึ้นเพื่อให้ง่ายต่อการใช้งานด้วยการสัมผัส ระบบลากเพื่อปรับค่าของ Slider " ..
+    "ได้รับการปรับให้ทำงานได้ดีกับอินพุตแบบสัมผัส")
+
+-- ตัวอย่าง Label
+SettingsSection:AddLabel("เวอร์ชั่น: 1.0.0")
+
+-- ตัวอย่าง Button สำหรับรีเซ็ตค่าทั้งหมด
+SettingsSection:AddButton({
+    Name = "รีเซ็ตค่าทั้งหมด",
+    Callback = function()
+        -- รีเซ็ตค่าต่างๆ
+        SpeedSlider:Set(16)
+        
+        OrionLib:MakeNotification({
+            Name = "ระบบตั้งค่า",
+            Content = "รีเซ็ตค่าทั้งหมดเรียบร้อย!",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+    end
+})
+
+-- เริ่มต้นไลบรารี (จำเป็นต้องทำเสมอที่ท้ายสคริปท์)
+OrionLib:Init()
