@@ -1,0 +1,37 @@
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local rootPart = character:WaitForChild("HumanoidRootPart")
+
+local waterLevel = -9 -- ระดับน้ำในเกม
+local walkOnWaterPart = Instance.new("Part")
+walkOnWaterPart.Size = Vector3.new(1, -9, 1) -- ขนาดของ Part ที่จะใช้เดินบนน้ำ
+walkOnWaterPart.Transparency = 0 -- ทำให้ Part ไม่มองเห็น
+walkOnWaterPart.Anchored = true
+walkOnWaterPart.CanCollide = true
+walkOnWaterPart.Parent = workspace
+
+local function updateWalkOnWaterPart()
+    walkOnWaterPart.Position = Vector3.new(rootPart.Position.X, waterLevel, rootPart.Position.Z)
+end
+
+-- อัปเดตตำแหน่งของ Part ให้อยู่ใต้ผู้เล่นตลอดเวลา
+RunService.Heartbeat:Connect(updateWalkOnWaterPart)
+
+-- ใช้ TweenService เพื่อให้ผู้เล่นสามารถเดินบนน้ำได้อย่างนุ่มนวล
+local function tweenToWaterLevel()
+    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear)
+    local tween = TweenService:Create(rootPart, tweenInfo, {Position = Vector3.new(rootPart.Position.X, waterLevel + 2, rootPart.Position.Z)})
+    tween:Play()
+end
+
+-- เมื่อผู้เล่นตกน้ำ
+humanoid.StateChanged:Connect(function(oldState, newState)
+    if newState == Enum.HumanoidStateType.Freefall and rootPart.Position.Y < waterLevel then
+        tweenToWaterLevel()
+    end
+end)
