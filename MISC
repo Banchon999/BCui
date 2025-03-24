@@ -1,12 +1,13 @@
 -- File: misc.lua
--- Collection of utility functions for Roblox
+-- Collection of utility functions for Roblox with improved error handling
 local Misc = {}
 
 -- WalkSpeed Modifier
 Misc.WalkSpeed = function(speed)
     local Players = game:GetService("Players")
     local player = Players.LocalPlayer
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
+    
+    if player and player.Character and player.Character:FindFirstChild("Humanoid") then
         player.Character.Humanoid.WalkSpeed = speed
     end
 end
@@ -17,13 +18,14 @@ Misc.InfiniteJump = function(toggle)
     local Players = game:GetService("Players")
     local player = Players.LocalPlayer
     
-    local jumping = false
     local connection
     
     if toggle then
-        connection = UserInputService.JumpRequest:Connect(function()
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-                player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        connection = UserInputService.InputBegan:Connect(function(input)
+            if input.KeyCode == Enum.KeyCode.Space then
+                if player and player.Character and player.Character:FindFirstChild("Humanoid") then
+                    player.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                end
             end
         end)
     else
@@ -35,16 +37,18 @@ Misc.InfiniteJump = function(toggle)
     return connection
 end
 
--- Fly Script
+-- Fly Script (Simplified version)
 Misc.Fly = function(toggle, speed)
     speed = speed or 50
     local Players = game:GetService("Players")
-    local UserInputService = game:GetService("UserInputService")
     local RunService = game:GetService("RunService")
+    local UserInputService = game:GetService("UserInputService")
     local player = Players.LocalPlayer
     
     local flying = false
     local flyConnection
+    local keyConnection
+    local keys = {w=false, a=false, s=false, d=false, space=false, shift=false}
     
     local function startFly()
         if flying then return end
@@ -55,75 +59,81 @@ Misc.Fly = function(toggle, speed)
         local humanoid = character:FindFirstChildOfClass("Humanoid")
         if not humanoid then return end
         
-        local rootPart = character.HumanoidRootPart
-        local camera = game.Workspace.CurrentCamera
-        
-        local controls = {
-            forward = false,
-            backward = false,
-            right = false,
-            left = false,
-            up = false,
-            down = false
-        }
-        
-        local keyBinds = {
-            [Enum.KeyCode.W] = "forward",
-            [Enum.KeyCode.S] = "backward",
-            [Enum.KeyCode.D] = "right",
-            [Enum.KeyCode.A] = "left",
-            [Enum.KeyCode.Space] = "up",
-            [Enum.KeyCode.LeftShift] = "down"
-        }
-        
-        local controlsConnection = UserInputService.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.Keyboard then
-                local key = keyBinds[input.KeyCode]
-                if key then controls[key] = true end
-            end
-        end)
-        
-        local controlsEndConnection = UserInputService.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.Keyboard then
-                local key = keyBinds[input.KeyCode]
-                if key then controls[key] = false end
-            end
-        end)
-        
-        humanoid.PlatformStand = true
+        humanoid:ChangeState(Enum.HumanoidStateType.Physics)
         flying = true
+        
+        keyConnection = UserInputService.InputBegan:Connect(function(input, processed)
+            if processed then return end
+            
+            if input.KeyCode == Enum.KeyCode.W then
+                keys.w = true
+            elseif input.KeyCode == Enum.KeyCode.A then
+                keys.a = true
+            elseif input.KeyCode == Enum.KeyCode.S then
+                keys.s = true
+            elseif input.KeyCode == Enum.KeyCode.D then
+                keys.d = true
+            elseif input.KeyCode == Enum.KeyCode.Space then
+                keys.space = true
+            elseif input.KeyCode == Enum.KeyCode.LeftShift then
+                keys.shift = true
+            end
+        end)
+        
+        UserInputService.InputEnded:Connect(function(input, processed)
+            if processed then return end
+            
+            if input.KeyCode == Enum.KeyCode.W then
+                keys.w = false
+            elseif input.KeyCode == Enum.KeyCode.A then
+                keys.a = false
+            elseif input.KeyCode == Enum.KeyCode.S then
+                keys.s = false
+            elseif input.KeyCode == Enum.KeyCode.D then
+                keys.d = false
+            elseif input.KeyCode == Enum.KeyCode.Space then
+                keys.space = false
+            elseif input.KeyCode == Enum.KeyCode.LeftShift then
+                keys.shift = false
+            end
+        end)
         
         flyConnection = RunService.RenderStepped:Connect(function()
             if not character or not character:FindFirstChild("HumanoidRootPart") then
                 flying = false
-                controlsConnection:Disconnect()
-                controlsEndConnection:Disconnect()
-                flyConnection:Disconnect()
+                if keyConnection then keyConnection:Disconnect() end
+                if flyConnection then flyConnection:Disconnect() end
                 return
             end
             
-            local flyVector = Vector3.new(0, 0, 0)
+            local rootPart = character.HumanoidRootPart
+            local camera = workspace.CurrentCamera
+            local direction = Vector3.new(0, 0, 0)
             
-            if controls.forward then
-                flyVector = flyVector + (camera.CFrame.LookVector * speed)
+            if keys.w then
+                direction = direction + camera.CFrame.LookVector
             end
-            if controls.backward then
-                flyVector = flyVector - (camera.CFrame.LookVector * speed)
+            if keys.s then
+                direction = direction - camera.CFrame.LookVector
             end
-            if controls.right then
-                flyVector = flyVector + (camera.CFrame.RightVector * speed)
+            if keys.a then
+                direction = direction - camera.CFrame.RightVector
             end
-            if controls.left then
-                flyVector = flyVector - (camera.CFrame.RightVector * speed)
+            if keys.d then
+                direction = direction + camera.CFrame.RightVector
             end
-            if controls.up then
-                flyVector = flyVector + Vector3.new(0, speed, 0)
+            if keys.space then
+                direction = direction + Vector3.new(0, 1, 0)
             end
-            if controls.down then
-                flyVector = flyVector - Vector3.new(0, speed, 0)
+            if keys.shift then
+                direction = direction - Vector3.new(0, 1, 0)
             end
             
-            rootPart.Velocity = flyVector
+            if direction.Magnitude > 0 then
+                direction = direction.Unit * speed
+            end
+            
+            rootPart.Velocity = direction
         end)
     end
     
@@ -132,7 +142,12 @@ Misc.Fly = function(toggle, speed)
         
         local character = player.Character
         if character and character:FindFirstChildOfClass("Humanoid") then
-            character:FindFirstChildOfClass("Humanoid").PlatformStand = false
+            character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.GettingUp)
+        end
+        
+        if keyConnection then
+            keyConnection:Disconnect()
+            keyConnection = nil
         end
         
         if flyConnection then
@@ -161,40 +176,82 @@ end
 Misc.FullBright = function(toggle)
     local Lighting = game:GetService("Lighting")
     
-    local originalBrightness = Lighting.Brightness
-    local originalAmbient = Lighting.Ambient
-    local originalOutdoorAmbient = Lighting.OutdoorAmbient
-    local originalClockTime = Lighting.ClockTime
+    -- Save original lighting properties
+    local savedProperties = {
+        Brightness = Lighting.Brightness,
+        Ambient = Lighting.Ambient,
+        OutdoorAmbient = Lighting.OutdoorAmbient,
+        ClockTime = Lighting.ClockTime,
+        FogEnd = Lighting.FogEnd
+    }
     
     if toggle then
         Lighting.Brightness = 2
         Lighting.Ambient = Color3.fromRGB(255, 255, 255)
         Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
-        Lighting.ClockTime = 14 -- Midday
+        Lighting.ClockTime = 14
+        Lighting.FogEnd = 100000
+        
+        -- Remove all lighting effects
+        for _, effect in pairs(Lighting:GetChildren()) do
+            if effect:IsA("BlurEffect") or effect:IsA("SunRaysEffect") or effect:IsA("ColorCorrectionEffect") then
+                effect.Enabled = false
+            end
+        end
     else
-        Lighting.Brightness = originalBrightness
-        Lighting.Ambient = originalAmbient
-        Lighting.OutdoorAmbient = originalOutdoorAmbient
-        Lighting.ClockTime = originalClockTime
+        Lighting.Brightness = savedProperties.Brightness
+        Lighting.Ambient = savedProperties.Ambient
+        Lighting.OutdoorAmbient = savedProperties.OutdoorAmbient
+        Lighting.ClockTime = savedProperties.ClockTime
+        Lighting.FogEnd = savedProperties.FogEnd
+        
+        -- Restore lighting effects
+        for _, effect in pairs(Lighting:GetChildren()) do
+            if effect:IsA("BlurEffect") or effect:IsA("SunRaysEffect") or effect:IsA("ColorCorrectionEffect") then
+                effect.Enabled = true
+            end
+        end
     end
 end
 
--- Anti-AFK
+-- Anti-AFK (Alternative approach that doesn't rely on VirtualUser)
 Misc.AntiAFK = function(toggle)
     local Players = game:GetService("Players")
-    local VirtualUser = game:GetService("VirtualUser")
     local player = Players.LocalPlayer
     
     local antiAFKConnection
     
     if toggle then
+        local lastActivityTime = tick()
+        
+        -- Function to simulate activity
+        local function simulateActivity()
+            local character = player.Character
+            if character and character:FindFirstChild("Humanoid") then
+                -- Small jump to simulate activity
+                character.Humanoid.Jump = true
+            end
+            lastActivityTime = tick()
+        end
+        
+        -- Connect to the Idled event
         antiAFKConnection = player.Idled:Connect(function()
-            VirtualUser:CaptureController()
-            VirtualUser:ClickButton2(Vector2.new())
+            simulateActivity()
+        end)
+        
+        -- Also periodically simulate activity as a fallback
+        spawn(function()
+            while antiAFKConnection and antiAFKConnection.Connected do
+                if tick() - lastActivityTime > 120 then -- 2 minutes
+                    simulateActivity()
+                end
+                wait(30) -- Check every 30 seconds
+            end
         end)
     else
         if antiAFKConnection then
             antiAFKConnection:Disconnect()
+            antiAFKConnection = nil
         end
     end
     
@@ -206,115 +263,187 @@ Misc.Rejoin = function()
     local TeleportService = game:GetService("TeleportService")
     local Players = game:GetService("Players")
     
-    TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
+    if #Players:GetPlayers() <= 1 then
+        TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
+    else
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
+    end
 end
 
 -- Auto Rejoin (AutoRJ)
 Misc.AutoRejoin = function(toggle)
-    local TeleportService = game:GetService("TeleportService")
+    local CoreGui = game:GetService("CoreGui")
     local Players = game:GetService("Players")
+    local TeleportService = game:GetService("TeleportService")
     
     local autoRejoinConnection
     
     if toggle then
-        autoRejoinConnection = Players.PlayerRemoving:Connect(function(leavingPlayer)
-            if leavingPlayer == Players.LocalPlayer then
+        -- Try to detect when player is kicked
+        autoRejoinConnection = CoreGui.RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
+            if child.Name == "ErrorPrompt" and child:FindFirstChild("MessageArea") and child.MessageArea:FindFirstChild("ErrorFrame") then
+                -- Wait a moment before trying to rejoin
+                wait(1)
                 TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
             end
         end)
     else
         if autoRejoinConnection then
             autoRejoinConnection:Disconnect()
+            autoRejoinConnection = nil
         end
     end
     
     return autoRejoinConnection
 end
 
--- Server Hop
+-- Safe Server Hop (with better error handling)
 Misc.ServerHop = function()
-    local TeleportService = game:GetService("TeleportService")
-    local HttpService = game:GetService("HttpService")
-    local Players = game:GetService("Players")
-    
-    local function getServers()
-        local servers = {}
-        local cursor = ""
-        local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Desc&limit=100"
+    local success, errorMsg = pcall(function()
+        local TeleportService = game:GetService("TeleportService")
+        local HttpService = game:GetService("HttpService")
+        local Players = game:GetService("Players")
         
-        repeat
-            local success, response = pcall(function()
-                return HttpService:JSONDecode(game:HttpGet(url .. (cursor ~= "" and "&cursor=" .. cursor or "")))
+        -- Create notification function
+        local function notify(text)
+            if game:GetService("StarterGui") then
+                game:GetService("StarterGui"):SetCore("SendNotification", {
+                    Title = "Server Hop",
+                    Text = text,
+                    Duration = 3
+                })
+            end
+            wait(0.1)
+        end
+        
+        notify("Finding a server...")
+        
+        -- Function to get server list in a safe way
+        local function fetchServers()
+            local url = "https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?limit=100"
+            local response = nil
+            local success, errorMsg = pcall(function()
+                response = HttpService:JSONDecode(game:HttpGet(url))
             end)
             
             if success and response and response.data then
-                for _, server in ipairs(response.data) do
-                    if server.playing < server.maxPlayers and server.id ~= game.JobId then
-                        table.insert(servers, server)
-                    end
-                end
-                cursor = response.nextPageCursor or ""
+                return response.data
             else
-                cursor = ""
+                notify("Error fetching servers: " .. (errorMsg or "Unknown error"))
+                return {}
             end
-        until cursor == ""
+        end
         
-        return servers
-    end
+        local servers = fetchServers()
+        
+        -- Filter valid servers
+        local validServers = {}
+        for _, server in pairs(servers) do
+            if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                table.insert(validServers, server)
+            end
+        end
+        
+        if #validServers > 0 then
+            -- Sort by player count (descending)
+            table.sort(validServers, function(a, b)
+                return a.playing > b.playing
+            end)
+            
+            -- Pick a random server from the top half
+            local serverCount = #validServers
+            local serverIndex = math.random(1, math.max(1, math.floor(serverCount / 2)))
+            local targetServer = validServers[serverIndex]
+            
+            notify("Joining server with " .. targetServer.playing .. " players...")
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, targetServer.id, Players.LocalPlayer)
+        else
+            -- If no servers found, try to rejoin current place
+            notify("No servers found. Rejoining current game...")
+            TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
+        end
+    end)
     
-    local servers = getServers()
-    
-    if #servers > 0 then
-        local randomServer = servers[math.random(1, #servers)]
-        TeleportService:TeleportToPlaceInstance(game.PlaceId, randomServer.id, Players.LocalPlayer)
-    else
-        warn("No available servers found")
+    if not success then
+        if game:GetService("StarterGui") then
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "Error",
+                Text = "Failed to server hop: " .. errorMsg,
+                Duration = 5
+            })
+        end
     end
 end
 
--- Low Server Hop (Joining servers with low population)
+-- Low Server Hop (Simplified and with better error handling)
 Misc.LowServerHop = function()
-    local TeleportService = game:GetService("TeleportService")
-    local HttpService = game:GetService("HttpService")
-    local Players = game:GetService("Players")
-    
-    local function getServers()
-        local servers = {}
-        local cursor = ""
-        local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
+    local success, errorMsg = pcall(function()
+        local TeleportService = game:GetService("TeleportService")
+        local HttpService = game:GetService("HttpService")
+        local Players = game:GetService("Players")
         
-        repeat
-            local success, response = pcall(function()
-                return HttpService:JSONDecode(game:HttpGet(url .. (cursor ~= "" and "&cursor=" .. cursor or "")))
+        -- Create notification function
+        local function notify(text)
+            if game:GetService("StarterGui") then
+                game:GetService("StarterGui"):SetCore("SendNotification", {
+                    Title = "Low Server Hop",
+                    Text = text,
+                    Duration = 3
+                })
+            end
+            wait(0.1)
+        end
+        
+        notify("Finding low population server...")
+        
+        -- Function to get server list in a safe way
+        local function fetchServers()
+            local url = "https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?limit=100"
+            local response = nil
+            local success, errorMsg = pcall(function()
+                response = HttpService:JSONDecode(game:HttpGet(url))
             end)
             
             if success and response and response.data then
-                for _, server in ipairs(response.data) do
-                    if server.playing < server.maxPlayers and server.id ~= game.JobId then
-                        table.insert(servers, server)
-                    end
-                end
-                cursor = response.nextPageCursor or ""
+                return response.data
             else
-                cursor = ""
+                notify("Error fetching servers: " .. (errorMsg or "Unknown error"))
+                return {}
             end
-        until cursor == "" or #servers >= 10
+        end
+        
+        local servers = fetchServers()
+        
+        -- Filter and sort by player count
+        local validServers = {}
+        for _, server in pairs(servers) do
+            if server.id ~= game.JobId and server.playing < server.maxPlayers then
+                table.insert(validServers, server)
+            end
+        end
         
         -- Sort by player count (ascending)
-        table.sort(servers, function(a, b)
+        table.sort(validServers, function(a, b)
             return a.playing < b.playing
         end)
         
-        return servers
-    end
+        if #validServers > 0 then
+            local targetServer = validServers[1] -- Server with lowest player count
+            notify("Joining server with " .. targetServer.playing .. " players...")
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, targetServer.id, Players.LocalPlayer)
+        else
+            notify("No suitable servers found...")
+        end
+    end)
     
-    local servers = getServers()
-    
-    if #servers > 0 then
-        -- Join the server with the lowest player count
-        TeleportService:TeleportToPlaceInstance(game.PlaceId, servers[1].id, Players.LocalPlayer)
-    else
-        warn("No available servers found")
+    if not success then
+        if game:GetService("StarterGui") then
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "Error",
+                Text = "Failed to low server hop: " .. errorMsg,
+                Duration = 5
+            })
+        end
     end
 end
 
